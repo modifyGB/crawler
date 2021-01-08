@@ -1,1 +1,1 @@
-scrapy crawl uttamhindu -a time=1610095076
+scrapy crawl first -a time=1610095076
