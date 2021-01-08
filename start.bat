@@ -1,1 +1,1 @@
-scrapy crawl loktej -a time=1610095076
+scrapy crawl uttamhindu -a time=1610095076
