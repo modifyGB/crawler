@@ -6,9 +6,10 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
+from datetime import datetime
 
 
-def aajtak_time_switch(time_string):
+def aajtak_time_switch1(time_string):
     # (अपडेटेड 14 नवंबर 2020, 3:50 PM IST)
     time_list = re.split(" |,|M|:", time_string)
     hour = time_list[-5]
@@ -20,16 +21,30 @@ def aajtak_time_switch(time_string):
     return "%s:%s:00" % (hour, min)
 
 
-class DemoSpider(scrapy.Spider):
-    name = 'aajtak_spider'
+def aajtak_time_switch2(time_string):
+    # 返回时间戳
+    # 09 दिसंबर 2020
+    Hindi_month = {
+        "जनवरी": 1, "फ़रवरी": 2, "मार्च": 3, "अप्रैल": 4, "मई": 5, "जून": 6, "जुलाई": 7,
+        "अगस्त": 8, "सितंबर": 9, "अक्टूबर": 10, "नवंबर": 11, "दिसंबर": 12, "सितम्बर": 9
+    }
+    time_list = time_string.split(" ")
+    month = str(Hindi_month[time_list[1]])
+    time_string = time_list[0] + " " + month + " " + time_list[2]
+    DateTime = datetime.strptime(time_string, "%d %m %Y")
+    return Util.format_time3(str(DateTime))
+
+
+class AajtakSpider(scrapy.Spider):
+    name = 'aajtak'
     website_id = 501  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
     start_urls = ['https://www.aajtak.in/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_crawler'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_cbs',
+        'password': 'dg_cbs',
+        'db': 'dg_test'
     }
     no_list = [
         "photo", "videos", "elections", "coronavirus-covid-19-outbreak", "rate-card", "anchors",
@@ -38,6 +53,11 @@ class DemoSpider(scrapy.Spider):
     type2_list = [
         "fact-check", "world"
     ]
+    handle_httpstatus_list = [404]
+
+    def __init__(self, time=None, *args, **kwargs):
+        super(AajtakSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        self.time = int(time) if time is not None else time
 
     def parse(self, response):
         soup = BeautifulSoup(response.text, features="lxml")
@@ -52,7 +72,7 @@ class DemoSpider(scrapy.Spider):
                 category1_list_type3.append(url)
             elif url.rsplit("/", 1)[-1] not in self.no_list:
                 category1_list_type1.append(url)
-            elif url.rsplit("/", 1)[-1] in self.type2_list:
+            elif url.rsplit("/", 1)[-1] in self.type2_list and url.rsplit("/", 1)[-1] not in self.no_list:
                 category1_list_type2.append(url)
         for url in category1_list_type1:
             yield scrapy.Request(url, callback=self.parse_cate1_type1)
@@ -125,20 +145,30 @@ class DemoSpider(scrapy.Spider):
             load_more_url = "https://www.aajtak.in/ajax/load-more-widget?id=" + str(load_page) + "&type=story" \
                                                                                                  "/photo_gallery/video/breaking_news&path=/india/uttarakhand "
             load_response = requests.get(load_more_url)
-            load_soup = BeautifulSoup(load_response.text, features="lxml")
-            load_soup_text = load_soup.text.strip()
-            load_news_url = []
-            if load_soup_text == "":
-                break
+            if load_response.status_code == 404:
+                load_page += 1
+                pass
             else:
-                h2_list = load_soup.find_all("h2")
-                for h2 in h2_list:
-                    url = h2.find("a").get("href")
-                    if url.split("/", 6)[5] != "video":
-                        load_news_url.append(url)
-            for url in load_news_url:
-                yield scrapy.Request(url, callback=self.parse_detail)
-            load_page += 1
+                load_soup = BeautifulSoup(load_response.text, features="lxml")
+                load_soup_text = load_soup.text.strip()
+                load_news_url = []
+                LastTimeStamp = aajtak_time_switch2(
+                    load_soup.find_all("div", class_="widget-listing")[-1].find("h5").text.strip())
+                if self.time is None or LastTimeStamp >= self.time:
+                    if load_soup_text == "":
+                        break
+                    else:
+                        h2_list = load_soup.find_all("h2")
+                        for h2 in h2_list:
+                            url = h2.find("a").get("href")
+                            if url.split("/", 6)[5] != "video":
+                                load_news_url.append(url)
+                    for url in load_news_url:
+                        yield scrapy.Request(url, callback=self.parse_detail)
+                    load_page += 1
+                elif LastTimeStamp < self.time:
+                    self.logger.info("时间截止")
+
 
     def parse_detail(self, response):
         soup = BeautifulSoup(response.text, features="lxml")
@@ -159,7 +189,7 @@ class DemoSpider(scrapy.Spider):
                 item['abstract'] += "\n" + li.text.strip()
         datelist = response.url.rsplit("-", 3)[-3:]
         pub_time = soup.find("div", class_="brand-detial-main").find_all("li")[-1].text.strip()
-        item['pub_time'] = "%s-%s-%s " % (datelist[0], datelist[1], datelist[2]) + aajtak_time_switch(pub_time)
+        item['pub_time'] = "%s-%s-%s " % (datelist[0], datelist[1], datelist[2]) + aajtak_time_switch1(pub_time)
         body = ""
         body_list = soup.find("div", class_="text-formatted field field--name-body field--type-text-with-summary "
                                             "field--label-hidden field__item").children if soup.find("div",
@@ -179,5 +209,4 @@ class DemoSpider(scrapy.Spider):
         item['cole_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
         item['website_id'] = self.website_id
         item['language_id'] = self.language_id
-
         yield item
