@@ -26,29 +26,41 @@ class MalayaSpider(scrapy.Spider):
         self.time = time
 
     def parse(self, response):
-        soup = bs(response.text, 'html.parser')    # ‘https://malaya.com.ph/index.php/news/’ 这个目录下的文章动态加载。
+        soup = BeautifulSoup(response.text, 'html.parser')    # ‘https://malaya.com.ph/index.php/news/’ 这个目录下的文章动态加载。
         for i in soup.select('#menu-main_menu-1 a')[1:]:
             url = i.get('href')
-            yield scrapy.Request(url, callback=self.parse_menu)
+            yield scrapy.Request(url, callback=self.parse_essay)
 
-    def parse_menu(self, response):
-        soup = bs(response.text, 'html.parser')
-        allPages = soup.select_one('span.pages').text.split(' ')[-1] if soup.select_one('span.pages').text else None  # 翻页
-        if allPages :
-            for i in range(int(allPages)):
-                url = response.url + 'page/' + str(i + 1) + '/'
-                yield scrapy.Request(url, callback=self.parse_essay)
-        else:
-            yield scrapy.Request(response.url, callback=self.parse_essay)
+    # def parse_menu(self, response):
+    #     soup = BeautifulSoup(response.text, 'html.parser')
+    #     try:
+    #         allPages = soup.select_one('span.pages').text.split(' ')[-1] if soup.select_one('span.pages').text else None  # 翻页
+    #         if allPages:
+    #             for i in range(int(allPages)):
+    #                 url = response.url + 'page/' + str(i + 1) + '/'
+    #                 yield scrapy.Request(url, callback=self.parse_essay)
+    #         else:
+    #             yield scrapy.Request(response.url, callback=self.parse_essay)
+    #     except:
+    #         self.logger.info(response.url+' is a wrong website!')
 
     def parse_essay(self, response):
-        soup = bs(response.text, 'html.parser')
-        for i in soup.select('div.td-block-row h3 a'):  # 每页的文章
-            url = i.get('href')
-            yield scrapy.Request(url, callback=self.parse_item)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        flag = True
+        for i in soup.select('.td-block-span6 '):  # 每页的文章
+            url = i.select_one('a').get('href')
+            pub_time = Util.format_time2(i.select_one('.td-post-date').text)
+            if self.time == None or Util.format_time3(pub_time) >= int(self.time):
+                yield scrapy.Request(url, callback=self.parse_item)
+            else:
+                flag = False
+                self.logger.info('时间截止')
+                break
+        if flag:
+            yield scrapy.Request(soup.select('.page-nav.td-pb-padding-side a')[-1].attrs['href'], callback=self.parse_essay)
 
     def parse_item(self, response):
-        soup = bs(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         item = DemoItem()
         category = response.url.split('/')[-3].split('_')
         if len(category) == 3:
