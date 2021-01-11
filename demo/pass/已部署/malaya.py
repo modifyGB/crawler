@@ -14,11 +14,11 @@ class MalayaSpider(scrapy.Spider):
     start_urls = ['https://malaya.com.ph/']
     website_id = 193  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
-    sql = {  # my sql 配置
+    sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_ldx',
-        'password': 'dg_ldx',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):
