@@ -9,7 +9,7 @@ import time
 
 
 class JanoSpider(scrapy.Spider):
-    name = 'jano'
+    name = 'janoduniya'
     allowed_domains = ['janoduniya.tv']
     #start_urls = ['http://janoduniya.tv/']
     website_id = 1057  # 网站的id(必填)

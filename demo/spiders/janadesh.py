@@ -9,7 +9,7 @@ import requests
 
 
 class JanaSpider(scrapy.Spider):
-    name = 'jana'
+    name = 'janadesh'
     allowed_domains = ['www.janadesh.in']
     # start_urls = ['http://www.janadesh.in/']
     website_id = 1067  # 网站的id(必填)

@@ -6,9 +6,8 @@ from scrapy.http import Request, Response
 import re
 import time
 
-
 class AapkSpider(scrapy.Spider):
-    name = 'aapk'
+    name = 'aapkikhabar'
     allowed_domains = ['aapkikhabar.com']
     start_urls = ['https://aapkikhabar.com/']
     website_id = 1023  # 网站的id(必填)
@@ -67,11 +66,11 @@ class AapkSpider(scrapy.Spider):
                 self.logger.info('时间截止！')
         if flag:
             nextPage = soup.find("a", class_="page-numbers next last page-numbers").get("href") if soup.find("a", class_="page-numbers next last page-numbers").get("href") else None
+            if nextPage:
+                yield Request(url=nextPage, meta=response.meta, callback=self.parse2)
 
         # nextPage = soup.select('div.col-md-12 a')[-1].get('href')
         # self.logger.info(nextPage)
-        if nextPage:
-            yield Request(url=nextPage, meta=response.meta, callback=self.parse2)
 
     def parse_item(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')

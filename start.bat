@@ -1,1 +1,1 @@
-scrapy crawl remate -a time=1610293804
+scrapy crawl janoduniya -a time=1610293804

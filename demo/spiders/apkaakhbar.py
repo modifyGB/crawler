@@ -10,7 +10,7 @@ import json
 
 
 class HbarSpider(scrapy.Spider):
-    name = 'hbar'
+    name = 'apkaakhbar'
     allowed_domains = ['apkaakhbar.com']
     # start_urls = ['http://apkaakhbar.com/']
     website_id = 1059  # 网站的id(必填)

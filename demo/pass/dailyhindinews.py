@@ -12,7 +12,7 @@ import requests
 
 
 class DhindSpider(scrapy.Spider):
-    name = 'dhind'
+    name = 'dailyhindinews'
     allowed_domains = ['dailyhindinews.com']
     # start_urls = ['http://www.dailyhindinews.com/']
     website_id = 1032  # 网站的id(必填)

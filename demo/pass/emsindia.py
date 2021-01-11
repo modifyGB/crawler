@@ -9,7 +9,7 @@ import requests
 
 
 class EmsiSpider(scrapy.Spider):
-    name = 'emsi'
+    name = 'emsindia'
     allowed_domains = ['emsindia.com']
     #start_urls = ['https://emsindia.com/']
     website_id = 1046  # 网站的id(必填)

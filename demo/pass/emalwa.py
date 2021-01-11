@@ -9,7 +9,7 @@ import requests
 
 
 class EmalSpider(scrapy.Spider):
-    name = 'emal'
+    name = 'emalwa'
     allowed_domains = ['emalwa.com']
     start_urls = ['http://emalwa.com/']
     website_id = 1050  # 网站的id(必填)
