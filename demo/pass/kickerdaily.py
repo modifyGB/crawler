@@ -32,31 +32,17 @@ class KickerdailySpider(scrapy.Spider):
         meta = {}
         soup = bs(response.text,"html.parser")
         category1 = soup.find("h1",class_="page-title").text.strip()
-        self.logger.info(category1)
         meta["category1"] = category1
         meta["category2"] = None
-        page = soup.find_all("a",class_="page-numbers")[-2].text.strip()
-        self.logger.info(page)
-        for i in range(1,int(page)+1):
-            url = response.url + "page/" + str(i) + "/"
-            yield scrapy.Request(url,callback=self.parse_time,meta=meta)
-
-    def parse_time(self,response):
-        soup = bs(response.text,"html.parser")
-        pub_time = soup.select("#main-content > article")[-1].find(class_="mh-meta-date updated").text
-        if self.time == None or Util.format_time3(Util.format_time2(pub_time)) >= int(self.time):
-            yield scrapy.Request(response.url, callback=self.parse_news_url,meta=response.meta, dont_filter=True)
-        else:
-            self.logger.info('时间截止')
-
-    def parse_news_url(self,response):
-        soup = bs(response.text,"html.parser")
         url_list = soup.select("#main-content > article")
         for h in url_list:
             news_url = h.find(class_="entry-title mh-posts-list-title").find("a").get("href")
-            self.logger.info(news_url)
-            yield scrapy.Request(news_url,callback=self.parse_news,meta=response.meta)
-
+            yield scrapy.Request(news_url,callback=self.parse_news,meta=meta)
+        pub_time = soup.select("#main-content > article")[-1].find(class_="mh-meta-date updated").text
+        if self.time == None or Util.format_time3(Util.format_time2(pub_time)) >= int(self.time):
+            yield scrapy.Request(soup.select('a.next.page-numbers')[0].attrs['href'], callback=self.parse)
+        else:
+            self.logger.info('时间截止')
 
     def parse_news(self,response):
         item = DemoItem()
@@ -80,6 +66,4 @@ class KickerdailySpider(scrapy.Spider):
         body = [p.text.strip() for p in div.find_all("p")] if div.find_all("p") else None
         body = "\n".join(body)
         item["body"] = body
-        self.logger.info(item)
-        self.logger.info('\n')
-        # yield item
+        yield item
