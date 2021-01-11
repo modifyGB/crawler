@@ -9,10 +9,10 @@ import time
 
 
 class AajtSpider(scrapy.Spider):
-    name = 'aajt'
+    name = 'aajtak'
     allowed_domains = ['aajtak.in']
     start_urls = ['http://aajtak.in/']
-    website_id = 1039  # 网站的id(必填)
+    website_id = 467  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
     sql = {  # my sql 配置
         'host': '192.168.235.162',
