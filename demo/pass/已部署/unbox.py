@@ -13,11 +13,11 @@ class unboxSpider(scrapy.Spider):
     website_id = 485 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
     # start_urls = ['https://www.example.com/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     data = {

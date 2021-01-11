@@ -12,11 +12,11 @@ class topgearSpider(scrapy.Spider):
     name = 'topgear'
     website_id = 487 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     categorys = [

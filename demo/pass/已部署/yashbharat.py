@@ -15,7 +15,7 @@ class yashbharat(scrapy.Spider):
         'host': '192.168.235.162',
         'user': 'dg_admin',
         'password': 'dg_admin',
-        'db': 'dg_test'
+        'db': 'dg_crawler'
     }
     def __init__(self, time=None, *args, **kwargs):
         super(yashbharat, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称
