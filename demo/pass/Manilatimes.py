@@ -38,6 +38,7 @@ class ManilatimesSpider(scrapy.Spider):
 
     def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
+        flag = True
         for i in soup.select('div.td-module-meta-info '):
             url = i.select_one('a').get('href')
             pub_time = Util.format_time2(i.select_one('.td-post-date').text)
@@ -45,8 +46,10 @@ class ManilatimesSpider(scrapy.Spider):
                 response.meta['pub_time'] = pub_time
                 yield scrapy.Request(url, callback=self.parse_item, meta=response.meta)
             else:
+                flag = False
                 self.logger.info('时间截止')
-        if soup.find(class_='td-icon-menu-right'):
+                break
+        if soup.find(class_='td-icon-menu-right') and flag:
             nextPage = soup.find(class_='page-nav td-pb-padding-side').select('a')[-1].get('href')
             yield Request(nextPage, callback=self.parse_essay, meta=response.meta)
 

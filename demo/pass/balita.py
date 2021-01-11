@@ -1,7 +1,7 @@
 import scrapy
 from demo.util import Util
 from demo.items import DemoItem
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
@@ -27,21 +27,31 @@ class BalitaSpider(scrapy.Spider):
 
     def parse(self, response):
         if re.match(r'http://balita.net.ph/$', response.url):  # 二级目录
-            soup = bs(response.text, 'html.parser')
+            soup = BeautifulSoup(response.text, 'html.parser')
             for i in soup.select('ul.sub-menu > li > a'):
                 url = i.get('href')
                 yield scrapy.Request(url, callback=self.parse)
         if re.match(r'http://balita.net.ph/category/', response.url):
-            soup = bs(response.text, 'html.parser')
-            nextPage = soup.select_one('span.current ~ a ').get('href')  # 翻页
-            if nextPage is not None:
-                yield scrapy.Request(url=nextPage, callback=self.parse)
-            for i in soup.select('#container > div.tablediv ~ div >h2 >a'):  # 每页的文章
-                url = i.get('href')
-                yield scrapy.Request(url, callback=self.parse_item)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            flag = True
+            for i in soup.select('div.tablediv ~ div'):  # 每页的文章
+                url = i.select_one('a').get('href')
+                pub_time = Util.format_time2(i.select_one('.meta_date').text)
+                if self.time == None or Util.format_time3(pub_time) >= int(self.time):
+                    yield scrapy.Request(url, callback=self.parse_item)
+                else:
+                    flag = False
+                    self.logger.info('时间截止')
+                    break
+            if flag:
+                try:
+                    nextPage = soup.select_one('span.current ~ a ').get('href')  # 翻页
+                    yield scrapy.Request(url=nextPage, callback=self.parse)
+                except:
+                    self.logger.info(response.url+' has no the next page.')
 
     def parse_item(self, response):
-        soup = bs(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         item = DemoItem()
         category = soup.select('span.post_cat > a')[0].text.split('/')
         if len(category) == 1:
