@@ -1,7 +1,7 @@
 import scrapy
 from demo.util import Util
 from demo.items import DemoItem
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
@@ -26,28 +26,37 @@ class PnaSpider(scrapy.Spider):
         self.time = time
 
     def parse(self, response):
-        soup = bs(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         for i in soup.select('li.active ~ li a')[4:]:
             url = 'https://www.pna.gov.ph' + i.get('href')
             m = {}
             m['category1'] = i.get('href').split('/')[-1]
-            yield scrapy.Request(url, callback=self.parse_menu, meta=m)
+            yield scrapy.Request(url, callback=self.parse_essay, meta=m)
 
-    def parse_menu(self, response):
-        soup = bs(response.text, 'html.parser')
-        allPages = soup.select('ul.pagination  a')[-1].get('href').split('=')[-1]  # 翻页
-        for i in range(int(allPages) + 1):
-            url = response.url + '?p=' + str(i)
-            yield scrapy.Request(url, callback=self.parse_essay, meta=response.meta)
+    # def parse_menu(self, response):
+    #     soup = BeautifulSoup(response.text, 'html.parser')
+    #     allPages = soup.select('ul.pagination  a')[-1].get('href').split('=')[-1]  # 翻页
+    #     for i in range(int(allPages) + 1):
+    #         url = response.url + '?p=' + str(i)
+    #         yield scrapy.Request(url, callback=self.parse_essay, meta=response.meta)
 
     def parse_essay(self, response):
-        soup = bs(response.text, 'html.parser')
-        for i in soup.select('div.articles h3 a'):  # 每页的文章
-            url = 'https://www.pna.gov.ph' + i.get('href')
-            yield scrapy.Request(url, callback=self.parse_item, meta=response.meta)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        flag = True
+        for i in soup.select('.media-body'):  # 每页的文章
+            url = 'https://www.pna.gov.ph' + i.select_one('a').get('href')
+            pub_time = i.select_one('.date').text
+            if self.time == None or Util.format_time3(Util.format_time2(pub_time)) >= int(self.time):
+                yield scrapy.Request(url, callback=self.parse_item, meta=response.meta)
+            else:
+                flag = False
+                self.logger.info('时间截止')
+                break
+        if flag:
+            yield scrapy.Request('https://www.pna.gov.ph' + soup.select('.pagination a')[-2].attrs['href'], callback=self.parse_essay, meta=response.meta)
 
     def parse_item(self, response):
-        soup = bs(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         item = DemoItem()
         item['category1'] = response.meta['category1']
         item['category2'] = None
@@ -56,7 +65,7 @@ class PnaSpider(scrapy.Spider):
 
         item['title'] = soup.select('div.page-header h1')[0].text
         ts = soup.select('span.date ')[0].text  # 文章时间字符串例如 ts = 'Published October 22, 2020, 4:32 PM' #下面将ts 格式化
-        month = Util.month2[ts.split(',')[0].split(' ')[1]]
+        month = str(Util.month[ts.split(',')[0].split(' ')[1]])
         date = ts.split(',')[1] + '-' + month + '-' + ts.split(',')[0].split(' ')[2]
         date.strip()  # 去掉多余的空格
         ttt = ts.split(',')[-1].split(' ')  # ttt = ['', '4:32', 'PM']
