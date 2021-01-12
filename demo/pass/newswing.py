@@ -9,7 +9,7 @@ import requests
 
 
 class NwinSpider(scrapy.Spider):
-    name = 'nwin'
+    name = 'newswing'
     allowed_domains = ['newswing.com']
    # start_urls = ['http://newswing.com/']
     website_id = 1047  # 网站的id(必填)
@@ -44,6 +44,7 @@ class NwinSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             try:
                 nextPage = soup.select_one('div.pages-nav a').get('href') if soup.select_one('div.pages-nav a').get('href') else None

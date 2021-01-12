@@ -9,7 +9,7 @@ import requests
 
 
 class NavsSpider(scrapy.Spider):
-    name = 'navs'
+    name = 'navsancharsamachar'
     allowed_domains = ['navsancharsamachar.com']
     # start_urls = ['http://navsancharsamachar.com/']
 
@@ -49,6 +49,7 @@ class NavsSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             try:
                 nextPage = soup.find(class_='next page-numbers').get('href') if soup.find(
