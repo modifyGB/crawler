@@ -43,6 +43,15 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
         for category in category_hrefList:
             yield scrapy.Request(category, callback=self.parse_category)
 
+        subcategories_soup = BeautifulSoup(requests.get(category_hrefList[0]).content, features='lxml')
+        subcategory_hrefList = []
+        subcategories = subcategories_soup.select('li.entry-category a') if subcategories_soup.select('li.entry-category a') else None
+        for subcategory in subcategories:
+            subcategory_hrefList.append(subcategory.get('href'))
+
+        for subcategory in subcategory_hrefList:
+            yield scrapy.Request(subcategory, callback=self.parse_category)
+
     def parse_category(self, response):
         soup = BeautifulSoup(response.text, features="lxml")
 
@@ -53,8 +62,6 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
                 article_hrefs.append(article.get('href'))
             for detail_url in article_hrefs:
                 yield Request(detail_url, callback=self.parse_detail)
-
-
 
             # check_soup = BeautifulSoup(requests.get(article_hrefs[-1]).content)     #不加content会出错，原因是因为这里的wb_data是requests对象，无法用BeautifulSoup解析
             temp_time = soup.select('div.td-ss-main-content span.td-post-date')[-1].text if soup.select('div.td-ss-main-content span.td-post-date')[-1].text else None
@@ -68,6 +75,8 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
                 self.logger.info("时间截止")
         else:
             self.logger.info("标签页内容为空")
+
+
 
     def parse_detail(self, response):
         item = DemoItem()
