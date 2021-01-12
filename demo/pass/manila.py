@@ -1,4 +1,5 @@
 import json
+
 import scrapy
 from bs4 import BeautifulSoup
 from scrapy import Request
@@ -20,9 +21,11 @@ class ManilaSpider(scrapy.Spider):
         'db': 'dg_test'
     }
 
-    header = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'
-    }
+    url = 'https://manilastandard.net/api/sub/articles?page={}&category={}&column=0&totItems={}&currentItems={}&exemption=0'
+
+    def __init__(self, time=None, *args, **kwargs):
+        super(ManilaSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        self.time = time
 
     def parse(self, response):  # 进入一级目录
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -32,7 +35,10 @@ class ManilaSpider(scrapy.Spider):
         meta2 = {}
         for i in menu1:
             meta1['cate1'] = i.text
-            yield Request(i.get('href'), callback=self.parse2, meta=meta1)
+            try:
+                yield Request(i.get('href'), callback=self.parse2, meta=meta1)
+            except:
+                self.logger.info('Wrong url: '+i.get('href'))
         for i in menu2:
             meta2['cate1'] = i.text
             yield Request(i.get('href'), callback=self.parse2, meta=meta2)
@@ -47,27 +53,34 @@ class ManilaSpider(scrapy.Spider):
                 meta['cate1'] = response.meta['cate1']
                 yield Request(i.get('href'), meta=meta, callback=self.parse3)
         except:
-            Request(response.url, callback=self.parse3, meta=meta)
+            self.logger.info('No more the next category')
+            Request(response.url, callback=self.parse3, meta=response.meta)
 
-    def parse3(self, response):  # 到达文章页面，分析翻页api实现翻页
+    def parse3(self, response):  # 到达文章列表页面，分析翻页api实现翻页,并且yield 每篇文章给parse_item()
         soup = BeautifulSoup(response.text, 'html.parser')
         tt = soup.select('div.page-category-contents ~ div > button')[0].get('onclick')  # 含有四个parameter的字符串
         param_lis = re.findall(r'\d+, \d+, \d+, \d+', tt)[0].split(',')  # 匹配得到[category,column,totItems,currentItems]
-        allPages = str(int((int(param_lis[2]) + 10) / 10))
-        category = param_lis[0]
-
-        for p in range(int(allPages)):
-            currentItems = str((p + 1) * 10)
-            url = 'https://manilastandard.net/api/sub/articles?page=' + str(p + 1) + '&category=' + category + \
-                  '&column=0&totItems=' + param_lis[2] + '&currentItems=' + currentItems + '&exemption=0'
-            yield Request(url, callback=self.parse4, meta=response.meta)
+        response.meta['category'] = param_lis[0]
+        response.meta['page'] = 1
+        response.meta['totItems'] = param_lis[2]
+        url = self.url.format(response.meta['page'],response.meta['category'],response.meta['totItems'],str((response.meta['page'] - 1) * 10))
+        yield Request(url,callback=self.parse4,meta=response.meta)
 
     def parse4(self, response):
-        essaysList = BeautifulSoup(
-            json.loads(
-                response.text)['data'], 'html.parser').select('div.articleimg a')
+        flag = True
+        essaysList = BeautifulSoup(json.loads(response.text)['data'], 'html.parser').select('div.articlecontext')
         for i in essaysList:
-            yield Request(i.get('href'), callback=self.parse_item, meta=response.meta)
+            pub_time = Util.format_time2(re.findall(r'\d+ \w+ ago',i.text)[0])
+            if self.time == None or Util.format_time3(pub_time) >= int(self.time):
+                yield Request(i.select_one('a').get('href'), callback=self.parse_item, meta=response.meta)
+            else:
+                flag = False
+                self.logger.info('时间截止')
+                break
+        if flag and (response.meta['page'] - 1) * 10 <= int(response.meta['totItems']):
+            response.meta['page'] += 1
+            yield Request(self.url.format(response.meta['page'],response.meta['category'],response.meta['totItems'],str((response.meta['page'] - 1) * 10)), callback=self.parse4, meta=response.meta)
+
 
     def parse_item(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')

@@ -9,7 +9,7 @@ import requests
 
 
 class ZeenSpider(scrapy.Spider):
-    name = 'zeen'
+    name = 'zeenews'
     allowed_domains = ['zeenews.india.com']
     start_urls = ['https://zeenews.india.com/hindi']
     website_id = 1033  # 网站的id(必填)
@@ -69,6 +69,7 @@ class ZeenSpider(scrapy.Spider):
                 else:
                     flag = False
                     self.logger.info('时间截止')
+                    break
         elif re.match(r'.*video.*', response.url):  # 视频的
             for i in soup.find_all(attrs={'class': 'mini-video mini-video-h margin-bt30px'}):  # 该目录初始的文章
                 url = 'https://zeenews.india.com' + i.select_one('a').get('href')
@@ -81,6 +82,7 @@ class ZeenSpider(scrapy.Spider):
                 else:
                     flag = False
                     self.logger.info('时间截止')
+                    break
         else:
             for t in soup.find_all(class_='section-article margin-bt30px clearfix'):  # 该目录初始的文章
                 url = 'https://zeenews.india.com' + t.select_one('a').get('href')
@@ -97,6 +99,7 @@ class ZeenSpider(scrapy.Spider):
                 else:
                     flag = False
                     self.logger.info('时间截止')
+                    break
         if flag:
             try:
                 nextPage = 'https://zeenews.india.com/'+ soup.find(class_='next last').select_one('a').get('href')

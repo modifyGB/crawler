@@ -42,6 +42,7 @@ class ShangbaoSpider(scrapy.Spider):
                 else:
                     flag = False
                     self.logger.info('时间截止')
+                    break
             except Exception:
                 self.logger.info('Next page no more!')
         if flag:
