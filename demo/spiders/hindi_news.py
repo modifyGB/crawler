@@ -61,17 +61,22 @@ class hindi_news(scrapy.Spider):
         while j < 5 and next_page_url:
             this_page_soup = BeautifulSoup(requests.get(this_page_url).text, 'lxml')
             news_url_list = this_page_soup.select('article.article_content div.tag-content-left > a')
-            for news_url in news_url_list:
-                this_url = 'https://hindi.mykhel.com/' + news_url.get('href')
-                yield Request(this_url, callback=self.parse_2)
-
-            j = j + 1
-            this_page_url = next_page_url
-            try:
-                next_page_url = 'https://hindi.mykhel.com/' + \
-                            this_page_soup.select('section div.prev-next-story.clearfix.click-for-more a')[0].get('href')
-            except:
-                print('没有下一页了')
+            last_time_url = 'https://hindi.mykhel.com/' + news_url_list[-1].get('href')
+            last_time = time_font(BeautifulSoup(requests.get(last_time_url).text , 'lxml').select('div.os-breadcrumb div.os-posted-by time')[0].get('datetime'))
+            if self.time == None or Util.format_time3(last_time) >= int(self.time):
+                for news_url in news_url_list:
+                    this_url = 'https://hindi.mykhel.com/' + news_url.get('href')
+                    yield Request(this_url, callback=self.parse_2)
+                j = j + 1
+                this_page_url = next_page_url
+                try:
+                    next_page_url = 'https://hindi.mykhel.com/' + \
+                                this_page_soup.select('section div.prev-next-story.clearfix.click-for-more a')[0].get('href')
+                except:
+                    print('没有下一页了')
+                    break
+            else:
+                self.logger.info('时间截止')
                 break
 
     def parse_2(self, response):

@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
+import requests
 
 def time_font(time_past):
     #2021-01-08T02:35:30+05:30
@@ -55,14 +56,19 @@ class dailyhindinews(scrapy.Spider):
         while j < 2 and next_page_url:
             this_page_soup = BeautifulSoup(response.text, 'lxml')
             news_url_list = this_page_soup.select('main.site-main > div > article')
+            last_time_url = news_url_list[-1].select('a')[0].get('href')
+            last_time = time_font(BeautifulSoup(requests.get(last_time_url).text , 'lxml').select('header.entry-header > div.entry-meta > span.posted-on > a > time')[0].get('datetime'))
+            if self.time == None or Util.format_time3(last_time) >= int(self.time):
+                for get_news_url in news_url_list:
+                    news_url = get_news_url.select('a')[0].get('href')
+                    yield Request(news_url , callback=self.parse_2)
 
-            for get_news_url in news_url_list:
-                news_url = get_news_url.select('a')[0].get('href')
-                yield Request(news_url , callback=self.parse_2)
-
-            this_page_url = next_page_url
-            next_page_url = this_page_soup.select('nav > div > a:nth-of-type(3)')[0].get("href")
-            j = j + 1
+                this_page_url = next_page_url
+                next_page_url = this_page_soup.select('nav > div > a:nth-of-type(3)')[0].get("href")
+                j = j + 1
+            else:
+                self.logger.info('时间截止')
+                break
 
     def parse_2(self , response , **kwargs):
         new_soup = BeautifulSoup(response.text, 'lxml')
@@ -94,4 +100,4 @@ class dailyhindinews(scrapy.Spider):
                 item['category2'] = item['category1']
             yield item
         except:
-            print(response.url + "   出现问题了")
+            self.logger.info(response.url + "   出现问题了")
