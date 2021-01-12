@@ -79,29 +79,26 @@ class philippinesnewsSpider(scrapy.Spider):
             elif pub_time_list[-5] == "Dec":
                 time = pub_time_list[-4]+"-12-"+pub_time_list[-6]+" "+pub_time_list[-2]+":00"
             item["pub_time"] = time
-
-            if self.time == None or Util.format_time3(time) >= int(self.time):
-                # 标题
-                item["title"] = temp.find("a").text.strip() if temp.find("a").text else None
-                # 摘要和正文
-                body = []
-                temp_list = soup.select_one("div.detail_text").find_all("p") if soup.select_one("div.detail_text").find_all(
-                    "p") else None
-                if temp_list:
-                    for temp in temp_list:
-                        body.append(temp.text.strip())
-                    item["abstract"] = body[0]
-                    item["body"] = "\n".join(body)
-                else:
-                    item["abstract"] = None
-                    item["body"] = None
-                # 图片
-                images = []
-                image_list = soup.select("div.article_image") if soup.select("div.article_image") else None
-                if image_list:
-                    for image in image_list:
-                        images.append(image.find("img").get("src"))
-                item["images"] = images
-                yield item
-            else:
-                self.logger.info('时间截止')
+        else:
+            item["pub_time"] = None
+        # 标题
+        item["title"] = temp.find("a").text.strip() if temp.find("a").text else None
+        # 摘要和正文
+        body = []
+        temp_list = soup.select_one("div.detail_text").find_all("p") if soup.select_one("div.detail_text").find_all("p") else None
+        if temp_list:
+            for temp in temp_list:
+                body.append(temp.text.strip())
+            item["abstract"] = body[0]
+            item["body"] = "\n".join(body)
+        else:
+            item["abstract"] = None
+            item["body"] = None
+        # 图片
+        images = []
+        image_list = soup.select("div.article_image") if soup.select("div.article_image") else None
+        if image_list:
+            for image in image_list:
+                images.append(image.find("img").get("src"))
+        item["images"] = images
+        yield item
