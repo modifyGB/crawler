@@ -10,14 +10,14 @@ import time
 
 #将爬虫类名和name字段改成对应的网站名
 class DemoSpider(scrapy.Spider):
-    name = 'spot'
-    website_id = 495 # 网站的id(必填)
+    name = 'demo'
+    website_id = -1 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
-    start_urls = ['https://www.spot.ph/']
+    start_urls = ['www.example.com']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_rht',
-        'password': 'dg_rht',
+        'user': 'dg_xxx',
+        'password': 'dg_xxx',
         'db': 'dg_test'
     }
 
