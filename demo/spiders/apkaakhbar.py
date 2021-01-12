@@ -52,6 +52,8 @@ class HbarSpider(scrapy.Spider):
             yield Request(url=i.get('href'), meta=meta, callback=self.parse)
 
     def judge_pub_time(self, url):  # 单独requests 拿pub_time
+        if self.time == None:
+            return True
         tt = BeautifulSoup(requests.get(url, headers=self.headers).text,
                            'html.parser').find(class_='entry-date updated td-module-date').text  # tt 形如January 11, 2021
         pub_time = Util.format_time2(tt)
