@@ -1,1 +1,1 @@
-scrapy crawl janoduniya -a time=1610293804
+scrapy crawl zeenews -a time=1610436544

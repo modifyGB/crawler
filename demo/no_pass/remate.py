@@ -37,10 +37,7 @@ class RemateSpider(scrapy.Spider):
             for url in a_list:
                 yield scrapy.Request(url,callback=self.parse_page)
         else:
-            a_list2 = ["https://www.remate.ph" + a.get("href") for a in soup.find_all("a","vc_btn3 vc_btn3-shape-square btn btn-sm btn-modern btn-primary")]if soup.find_all("a","vc_btn3 vc_btn3-shape-square btn btn-sm btn-modern btn-primary") else None
-            for url2 in a_list2:
-                print(url2)
-                yield scrapy.Request(url2, callback=self.parse_page)
+                yield scrapy.Request("https://www.remate.ph"+soup.select('.wpb_wrapper.vc_column-inner a')[-1].attrs['href'], callback=self.parse_page)
 
     def parse_page(self,response):
         meta = {}
@@ -52,16 +49,13 @@ class RemateSpider(scrapy.Spider):
             category2 = soup.select(".breadcrumb > li")[2].text.strip() if soup.select(".breadcrumb > li")[2] else None
         meta["category1"] = category1
         meta["category2"] = category2
-        self.logger.info(category1)
-        self.logger.info(category2)
         for i in soup.find_all(class_="entry-title"):
             news_url = i.find("a").get("href")
             yield scrapy.Request(news_url,callback=self.parse_news,meta=meta)
         pub_time = soup.find_all(class_="meta-date")[-1].text.strip()
-        self.logger.info((Util.format_time2(pub_time)))
-        if self.time == None or Util.format_time3(Util.format_time2(pub_time)) >= int(self.time):
+        pub_time = re.findall(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+',pub_time)[0]
+        if self.time == None or Util.format_time3(pub_time) >= int(self.time):
             url = soup.find(class_="next page-numbers").get("href") if soup.find(class_="next page-numbers") else None
-            self.logger.info(url)
             if url:
                 yield scrapy.Request(url,callback=self.parse_page)
         else:
@@ -84,8 +78,9 @@ class RemateSpider(scrapy.Spider):
             for p in pub:
                 p_time += p
             pub_time = str(datetime.datetime.strptime(p_time,'%B%d%Y%I%M')) + pu
-            # print(pub_time)
-        item["pub_time"] = Util.format_time2(pub_time)
+            pub_time = re.findall(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+',pub_time)[0]
+            self.logger.info(pub_time)
+        item["pub_time"] = pub_time
 
         title = soup.select_one("#content > article > h1").text.strip() if soup.select_one("#content > article > h1") else None
         item["title"] = title
