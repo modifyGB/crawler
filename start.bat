@@ -1,1 +1,1 @@
-scrapy crawl zeenews -a time=1610436544
+scrapy crawl panchjanya -a time=1610436544
