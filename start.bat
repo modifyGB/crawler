@@ -1,1 +1,1 @@
-scrapy crawl second -a time=1610095076
+scrapy crawl zeenews -a time=1610436544
