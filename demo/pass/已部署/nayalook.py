@@ -40,9 +40,9 @@ class NayalookSpider(scrapy.Spider):
     start_urls = ['https://www.nayalook.com/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_cbs',
-        'password': 'dg_cbs',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数

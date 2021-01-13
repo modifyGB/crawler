@@ -15,11 +15,11 @@ class pinoyparazzi(scrapy.Spider):
     website_id = 1241 # 网站的id(必填)
     language_id = 1880 # 所用语言的id
     start_urls = ['https://www.pinoyparazzi.com/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_gfy',
-        'password' : 'dg_gfy',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数

@@ -15,13 +15,13 @@ class DhindSpider(scrapy.Spider):
     name = 'dailyhindinews'
     allowed_domains = ['dailyhindinews.com']
     # start_urls = ['http://www.dailyhindinews.com/']
-    website_id = 1032  # 网站的id(必填)
+    website_id = 1130  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
-    sql = {  # my sql 配置
+    sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_ldx',
-        'password': 'dg_ldx',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):   # 这个爬虫的时间截止有点问题
