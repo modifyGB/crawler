@@ -12,11 +12,11 @@ class BoholchronicleSpider(scrapy.Spider):
     website_id = 448 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
     start_urls = ['https://www.boholchronicle.com.ph/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):
@@ -37,6 +37,7 @@ class BoholchronicleSpider(scrapy.Spider):
         html = BeautifulSoup(response.text)
         for i in html.select('#loop-container div .post-title a'):
             yield Request(i.attrs['href'],meta=response.meta,callback=self.parse3)
+        #下面这里就是截止方法
         if self.time == None or Util.format_time3(Util.format_time2(html.select('#loop-container div .post-byline')[-1].text)) >= int(self.time):
             yield Request(html.select('.nav-links > a')[-1].attrs['href'],meta=response.meta,callback=self.parse2)
 
