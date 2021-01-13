@@ -21,20 +21,22 @@ class MediakhabarSpider(scrapy.Spider):  # '#menu-%e0%a4%ae%e0%a5%80%e0%a4%a1%e0
         'db': 'dg_test'
     }
 
-    def start_requests(self): # 有三级目录，难点在于进入目录，翻页和parseitem都不难
+    def __init__(self, time=None, *args, **kwargs):
+        super(MediakhabarSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        self.time = time
+
+    def parse(self, response): # 有三级目录，难点在于进入目录，翻页和parseitem都不难
         soup = BeautifulSoup(requests.get('http://mediakhabar.com/').text, 'html.parser')
         for i in soup.select('#td-header-menu ul > li')[1:]:
-            meta = {}
-            meta['category1'] = i.select_one('a').text
-            meta['category2'] = None
-            yield Request(url=i.select_one('a').get('href'), meta=meta)  # 一级目录给parse_essay
+            meta = {'category1': i.select_one('a').text, 'category2': None}
+            yield Request(url=i.select_one('a').get('href'), meta=meta, callback=self.parse_essay)  # 一级目录给parse_essay
             try:
                 for j in i.select('ul>li>a'):
                     meta['category2']= j.text
-                    yield Request(url=j.get('href'), meta=meta)
+                    yield Request(url=j.get('href'), meta=meta, callback=self.parse_essay)
                     try:
                         for t in j.select('ul>li>a'):
-                            yield Request(url=t.get('href'), meta=meta)
+                            yield Request(url=t.get('href'), meta=meta, callback=self.parse_essay)
                     except:
                         self.logger.info('No more category3')
                         continue
@@ -42,11 +44,7 @@ class MediakhabarSpider(scrapy.Spider):  # '#menu-%e0%a4%ae%e0%a5%80%e0%a4%a1%e0
                 self.logger.info('No more category2!')
                 continue
 
-    def __init__(self, time=None, *args, **kwargs):
-        super(MediakhabarSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
-        self.time = time
-
-    def parse(self, response):
+    def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
         for i in soup.select('.td-block-span6 '):
@@ -62,7 +60,7 @@ class MediakhabarSpider(scrapy.Spider):  # '#menu-%e0%a4%ae%e0%a5%80%e0%a4%a1%e0
                 self.logger.info('时间截止')
         if flag:
             nextPage = soup.select_one('.current ~ a').get('href', 'Next page no more')
-            yield Request(nextPage, meta=response.meta, callback=self.parse)
+            yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
 
     def parse_item(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')

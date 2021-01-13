@@ -11,7 +11,7 @@ import time
 class PresSpider(scrapy.Spider):
     name = 'pressnote'
     allowed_domains = ['pressnote.in']
-    #start_urls = ['http://pressnote.in/']
+    start_urls = ['http://pressnote.in/']
     website_id = 1045  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
     sql = {  # my sql 配置
@@ -21,20 +21,20 @@ class PresSpider(scrapy.Spider):
         'db': 'dg_test'
     }
 
-    def start_requests(self):
-        soup = BeautifulSoup(requests.get('http://pressnote.in/').text, 'html.parser')
-        for i in soup.select('#mainmenu  a'):
-            try:
-                meta = {'category1': i.text}
-                yield Request(url=i.get('href'), meta=meta)
-            except:
-                self.logger.info('Wrong category url!')
-
     def __init__(self, time=None, *args, **kwargs):
         super(PresSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
         self.time = time
 
     def parse(self, response):
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for i in soup.select('#mainmenu  a'):
+            try:
+                meta = {'category1': i.text}
+                yield Request(url=i.get('href'), meta=meta, callback=self.parse_essay)
+            except:
+                self.logger.info('Wrong category url!')
+
+    def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
         for i in soup.find_all(class_='fbt-col-lg-12 col-md-4 col-xs-6 padding-reset'):
@@ -53,11 +53,11 @@ class PresSpider(scrapy.Spider):
                     nextPage = soup.find_all(class_='NavigationButton')[-1].get('onclick').replace("window.location='", '')[:-2]
                     if re.match('http',nextPage):
                         #self.logger.info('11111111111111111111111111111111翻页')
-                        yield Request(nextPage, meta=response.meta, callback=self.parse)
+                        yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
                     else:
                         nextPage ='https://www.pressnote.in/'+ nextPage
                         #self.logger.info('2222222222222222222222222222翻页')
-                        yield Request(nextPage, meta=response.meta, callback=self.parse)
+                        yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
             except:
                 self.logger.info('Next page no more')
 
