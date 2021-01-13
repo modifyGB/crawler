@@ -11,6 +11,7 @@ import time
 class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候刚开始用了很多try，except。结果很难debug，应当最后慢慢加try，except或者用它调试。
     name = 'swatantraawaz'
     allowed_domains = ['swatantraawaz.com']
+    start_urls = ['https://www.swatantraawaz.com/']
     website_id = 1043  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
     sql = {  # my sql 配置
@@ -20,13 +21,17 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
         'db': 'dg_test'
     }
 
-    def start_requests(self):
-        soup = BeautifulSoup(requests.get('https://www.swatantraawaz.com/').text, 'html.parser')
+    def __init__(self, time=None, *args, **kwargs):
+        super(SwatantraawazSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        self.time = time
+
+    def parse(self, response):
+        soup = BeautifulSoup(response.text, 'html.parser')
         for i in soup.select('.cat a'):  # 网站底部的目录，
             meta = {'category1': i.text, 'category2': None}
             url = 'https://www.swatantraawaz.com' + i.get('href')
             if re.findall('category', url):
-                yield Request(url=url, meta=meta, callback=self.parse)
+                yield Request(url=url, meta=meta, callback=self.parse_essay)
             else:
                 self.logger.info('Wrong Url :')
                 self.logger.info(url)
@@ -34,7 +39,7 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
             meta = {'category1': i.text, 'category2': None}
             url = 'https://www.swatantraawaz.com' + i.get('href')
             if re.findall('category', url):
-                yield Request(url=url, meta=meta, callback=self.parse)
+                yield Request(url=url, meta=meta, callback=self.parse_essay)
             else:
                 self.logger.info('Wrong Url ')
                 self.logger.info(url)
@@ -54,10 +59,6 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
                     yield Request(url=url, meta=meta, callback=self.parse)
             except:
                 self.logger.info('No more category2!')
-
-    def __init__(self, time=None, *args, **kwargs):
-        super(SwatantraawazSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
-        self.time = time
 
     def judge_pub_time(self, url):
         if self.time is None:
@@ -81,7 +82,7 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
             self.logger.info('Photo news have no pub_time')
             return True
 
-    def parse(self, response):
+    def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
         for i in soup.select('.news_sa '):
@@ -97,7 +98,7 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
                 break
         if flag:
             nextPage = 'https://www.swatantraawaz.com'+soup.select_one('.numac ~ a').get('href')
-            yield Request(nextPage, meta=response.meta, callback=self.parse)
+            yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
 
     def parse_item(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
