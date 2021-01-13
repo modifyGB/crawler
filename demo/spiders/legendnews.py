@@ -12,6 +12,7 @@ class LegendnewsSpider(scrapy.Spider):
     name = 'legendnews'
     allowed_domains = ['legendnews.in']
     website_id = 1051  # 网站的id(必填)
+    start_urls = ['http://legendnews.in/']
     language_id = 1930  # 所用语言的id
     sql = {  # my sql 配置
         'host': '192.168.235.162',
@@ -24,16 +25,16 @@ class LegendnewsSpider(scrapy.Spider):
         super(LegendnewsSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
         self.time = time
 
-    def start_requests(self):
-        soup = BeautifulSoup(requests.get('http://legendnews.in/').text, 'html.parser')
+    def parse(self, response):
+        soup = BeautifulSoup(response.text, 'html.parser')
         for i in soup.select('#menu-primary-menu > li > a'):  # 网站头部的目录
             meta = {'category1': i.text, 'category2': None}
-            yield Request(url=i.get('href'), meta=meta)  # 一级目录给parse_essay
+            yield Request(url=i.get('href'), meta=meta, callback=self.parse_essay)  # 一级目录给parse_essay
             for j in i.select('ul > li > a'):
                 meta['category2'] = j.text
-                yield Request(url=j.get('href'), meta=meta, callback=self.parse)
+                yield Request(url=j.get('href'), meta=meta, callback=self.parse_essay)
 
-    def parse(self, response):
+    def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
         for i in soup.select('article '):
