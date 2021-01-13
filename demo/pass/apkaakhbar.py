@@ -88,7 +88,6 @@ class HbarSpider(scrapy.Spider):
             for i in soup.select('div.td-block-span6 a'):  # 从动态加载的第1页开始拿文章
                 response.meta['title'] = i.get('title')
                 if self.judge_pub_time(i.get('href')):
-                    self.logger.info(' 动态拿文章！！拿文章！！拿文章！！拿文章！！拿文章！！拿文章！！')
                     yield Request(url=i.get('href'), callback=self.parse_item, meta=response.meta)
                 else:
                     flag2 = False
@@ -99,7 +98,6 @@ class HbarSpider(scrapy.Spider):
             if int(response.meta['currentPage']) <= int(response.meta['max_num_pages']):
                 self.data['loopState[currentPage]'] = response.meta['currentPage']
                 response.meta['currentPage'] = str(int(response.meta['currentPage']) + 1)  # 当前页加一，传给 下一次post
-                self.logger.info(' 动态拿翻页！！翻页！！翻页！！翻页！！翻页！！翻页！！翻页！！翻页！！')
                 yield scrapy.FormRequest(url=self.post_url, meta=response.meta, method='POST', formdata=self.data)
 
     def parse2(self, response):  # 主页的文章，和翻页的文章
