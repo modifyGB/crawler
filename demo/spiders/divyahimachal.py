@@ -1,5 +1,5 @@
 import scrapy
-from demo.items import DemoItem
+from Demo.items import DemoItem
 from bs4 import BeautifulSoup as bs
 import re
 from datetime import datetime
@@ -141,11 +141,11 @@ class divyahimachalSpider(scrapy.Spider):
             for div in div_list:
                 news_url = div.select_one("a").get("href")
                 yield scrapy.Request(news_url, callback=self.get_news_detail, meta={"item": item})  # 层与层之间通过meta参数传递数据
-
+                print("这是现在的item哦："+item)
             if self.time == None or format_time3(format_time2(soup.find_all("span", class_="byline")[-1].text.split(" ", 1)[1])) >= int(self.time):
                 url = soup.find("a",class_="next page-numbers").get("href") if soup.find("a",class_="next page-numbers").get("href")else None
                 if url:
-                    yield scrapy.Request(url, meta=response.meta, callback=self.get_next_page)
+                  yield scrapy.Request(url, meta=response.meta, callback=self.get_next_page)
             else:
                 self.logger.info('时间截止')
 
@@ -160,12 +160,12 @@ class divyahimachalSpider(scrapy.Spider):
         # item={}
         body_div = soup.find("div", class_="content-body")
         title = soup.find("article", class_="storybox").select_one("h1").text
-        pub_time = format_time2(soup.find_all("span")[-4].text.strip())
+        pub_time = format_time2(soup.find_all("span")[7].text.strip())
         image_list = [img.get("src") for img in soup.find_all("img",class_="attachment-post-thumbnail size-post-thumbnail wp-post-image")] if soup.find("img", class_="attachment-post-thumbnail size-post-thumbnail wp-post-image") else None
-        abstract = body_div.select_one("p>strong").text.strip() if body_div.select_one("p>strong") else body_div.select_one("p").text.strip().split("।")[1]
         body = ''
         for p in body_div.select("p"):
             body += (p.text + '\n')
+        abstract = body_div.select_one("p>strong").text.strip() if body_div.select_one("p>strong") else body.split("।")[0]
         item["title"] = title
         item["pub_time"] = pub_time
         item["images"] = image_list
