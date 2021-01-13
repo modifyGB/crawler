@@ -1,1 +1,1 @@
-scrapy crawl philippinesnews -a time=1610529812
+scrapy crawl univarta -a time=1610529812

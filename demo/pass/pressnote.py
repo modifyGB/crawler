@@ -26,8 +26,8 @@ class PresSpider(scrapy.Spider):
         self.time = time
 
     def parse(self, response):
-        soup = BeautifulSoup(response.text, 'html.parser')
-        for i in soup.select('#mainmenu  a'):
+        soup = BeautifulSoup(response.text)
+        for i in soup.select('#mainmenu a'):
             try:
                 meta = {'category1': i.text}
                 yield Request(url=i.get('href'), meta=meta, callback=self.parse_essay)
@@ -47,6 +47,7 @@ class PresSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             try:
                 if soup.find_all(class_='NavigationButton')[-1].get('value') == 'Next':

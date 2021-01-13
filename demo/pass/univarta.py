@@ -74,10 +74,10 @@ class UnivartaSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             try:
                 nextPage = response.meta['cate_url'] + soup.select_one('.jp-current ~ a').get('href')
-                self.logger.info(nextPage)
                 yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
             except:
                 self.logger.info('Next page no more!')
@@ -88,10 +88,12 @@ class UnivartaSpider(scrapy.Spider):
         item['title'] = response.meta['title']
         item['category1'] = response.meta['category1']
         item['abstract'] = response.meta['abstract']
-        item['body'] = soup.select_one('.storydetails').text  # 一大段，没有换行  （再者，翻译之后的html标签和原网页的大同小异，要以源标签为参考）
         item['images'] = response.meta['images']
         item['category2'] = response.meta['category2']
         item['pub_time'] = response.meta['pub_time']
-        # self.logger.info('item item item item item item item item item item item item')
+        try:
+            item['body'] = soup.select_one('.storydetails').text  # 一大段，没有换行  （再者，翻译之后的html标签和原网页的大同小异，要以源标签为参考）
+        except Exception:
+            pass
         return item
 
