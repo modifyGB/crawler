@@ -84,13 +84,17 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
         temp_time = soup.select_one('div.meta-info span.td-post-date').text if soup.select_one('div.meta-info span.td-post-date').text else None
         item['pub_time'] = time_adjustment(temp_time)
         image_list = []
-        imgs = soup.find('div', class_="td-post-content td-pb-padding-side").select_one('div.td-post-featured-image').select('img') if soup.find('div', class_="td-post-content td-pb-padding-side").select_one('div.td-post-featured-image').select('img') else None
-        if imgs:
+        imgs_div = soup.find('div', class_="td-post-content td-pb-padding-side").select_one('div.td-post-featured-image') if soup.find('div', class_="td-post-content td-pb-padding-side").select_one('div.td-post-featured-image') else None
+        if imgs_div:
+            imgs = imgs_div.select('img')
             for img in imgs:
                 image_list.append(img.get('src'))
             item['images'] = image_list
         p_list = []
-        all_p = soup.find('div', class_="td-post-content td-pb-padding-side").select('p') if soup.find('div', class_="td-post-content td-pb-padding-side").select('p') else None
+        if soup.find('div', class_="td-post-content td-pb-padding-side").select('p'):
+            all_p = soup.find('div', class_="td-post-content td-pb-padding-side").select('p')
+        else:
+            all_p = soup.select('div.artfulstry div')
         for paragraph in all_p:
             p_list.append(paragraph.text)
         body = '\n'.join(p_list)
