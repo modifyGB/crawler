@@ -44,14 +44,17 @@ class starmometer(scrapy.Spider):
             news_url=url.get('href')
             yield scrapy.Request(news_url,meta=response.meta,callback=self.parse_details)
         #翻页
-        ddl=soup.select('.loop-data>.meta')[0].text.strip()
-        ex='(.*?)//.*?'
-        ddl=re.findall(ex,ddl,re.S)#January 10, 2021
-        ddl=Util.format_time2(ddl[0])#2021-01-10 00:00:00
-        ddl=Util.format_time3(ddl)#1610208000
+        if soup.select('.loop-data>.meta'):
+            ddl=soup.select('.loop-data>.meta')[0].text.strip()
+            ex='(.*?)//.*?'
+            ddl=re.findall(ex,ddl,re.S)#January 10, 2021,得到列表
+            ddl=Util.format_time2(ddl[0])#2021-01-10 00:00:00
+            ddl=Util.format_time3(ddl)#1610208000
+        else:
+            ddl=None
         if soup.find('a',class_='next page-numbers'):
             next_url=soup.find('a',class_='next page-numbers').get('href')
-            if(ddl>=int(self,time)):
+            if(self.time==None or ddl>=int(self.time)):
                 yield scrapy.Request(next_url,meta=response.meta,callback=self.parse_category2)
             else:
                 self.logger.info('时间截止')
@@ -71,13 +74,13 @@ class starmometer(scrapy.Spider):
             item['body'] +='\n'
         item['abstract']=soup.find('div',class_='entry clearfix').select('p')[0].text.strip() if soup.find('div',class_='entry clearfix').select('p') else None
    
-        item['images']=''
+        item['images']=[]
         image_list=soup.find('div',class_='entry clearfix').select('p>img')if soup.find('div',class_='entry clearfix').select('p>img') else None
         if(image_list):
             for image in image_list:
                 image=image.get('src')
-                item['images']+=image
-                item['images']+='\n'
+                item['images'].append(image)
+
 
         pub=soup.find('span',class_='updated').text.strip() if soup.find('span',class_='updated').text.strip() else None
         if(pub):
