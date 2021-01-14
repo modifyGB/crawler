@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as bs
 from demo.util import Util
 
 class sandhyapravaktaSpider(scrapy.Spider):
-    name = 'sandhyapravaktaSpider'
+    name = 'sandhyapravakta'
     website_id =  1102  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
 
@@ -52,22 +52,20 @@ class sandhyapravaktaSpider(scrapy.Spider):
                     # print(category1 + '\t' + category1_url)
 
     def get_next_page(self, response):
+        soup = bs(response.text, "html.parser")
+        content_div = soup.find("div", class_="td-ss-main-content")
 
-            item = response.meta["item"]
-            soup = bs(response.text, "html.parser")
-            content_div = soup.find("div", class_="td-ss-main-content")
+        h3_list = content_div.find_all("h3", class_="entry-title td-module-title")
+        for h3 in h3_list:
+            news_url = h3.select_one("a").get("href")
+            yield scrapy.Request(news_url,meta=response.meta,callback=self.get_news_detail)
 
-            h3_list = content_div.find_all("h3", class_="entry-title td-module-title")
-            for h3 in h3_list:
-                news_url = h3.select_one("a").get("href")
-                yield scrapy.Request(news_url,meta=response.meta,callback=self.get_news_detail)
-
-            if self.time == None or Util.format_time3(Util.format_time2(content_div.find_all("time",class_="entry-date updated td-module-date")[-1].text)) >= int(self.time):
-                    next_url = soup.find("div",class_="page-nav td-pb-padding-side").select("a")[-1].get("href") if  soup.find("div",class_="page-nav td-pb-padding-side").select("a")[-1].select("i")else None
-                    if next_url:
-                        yield scrapy.Request(next_url, meta=response.meta, callback=self.get_next_page)
-            else:
-                self.logger.info('时间截止')
+        if self.time == None or Util.format_time3(Util.format_time2(content_div.find_all("time",class_="entry-date updated td-module-date")[-1].text)) >= int(self.time):
+                next_url = soup.find("div",class_="page-nav td-pb-padding-side").select("a")[-1].get("href") if  soup.find("div",class_="page-nav td-pb-padding-side").select("a")[-1].select("i")else None
+                if next_url:
+                    yield scrapy.Request(next_url, meta=response.meta, callback=self.get_next_page)
+        else:
+            self.logger.info('时间截止')
 
     def get_news_detail(self,response):
         '''
@@ -77,17 +75,19 @@ class sandhyapravaktaSpider(scrapy.Spider):
         item = response.meta["item"]
 
         soup = bs(response.text, "html.parser")
-
-        title = soup.find("h1", class_="entry-title").text.strip()
-        pub_time = soup.select_one("article").find("time", class_="entry-date updated td-module-date").text
-        image_list = [img.get("src") for img in soup.find("div", class_="td-post-featured-image").select("img")]
-        body = ''
-        for p in soup.select_one("article").select("p"):
-            body += p.text
-        abstract = body.split("।", 1)[0]
-        item["title"] = title
-        item["pub_time"] = Util.format_time2(pub_time)
-        item["images"] = image_list
-        item["abstract"] = abstract
-        item["body"] = body
+        try:
+            title = soup.find("h1", class_="entry-title").text.strip()
+            pub_time = soup.select_one("article").find("time", class_="entry-date updated td-module-date").text
+            body = ''
+            for p in soup.select_one("article").select("p"):
+                body += p.text
+            abstract = body.split("।", 1)[0]
+            item["title"] = title
+            item["pub_time"] = Util.format_time2(pub_time)
+            item["abstract"] = abstract
+            item["body"] = body
+            image_list = [img.get("src") for img in soup.find("div", class_="td-post-featured-image").select("img")]
+            item["images"] = image_list
+        except Exception:
+            pass
         yield item

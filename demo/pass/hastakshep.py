@@ -61,6 +61,7 @@ class HastakshepSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             nextPage = soup.select_one('#pagination a').get('href', 'Next Page No More')
             yield Request(nextPage, meta=response.meta, callback=self.parse_essay)

@@ -88,7 +88,8 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
         if imgs_div:
             imgs = imgs_div.select('img')
             for img in imgs:
-                image_list.append(img.get('src'))
+                if re.findall(r'data:image/gif',img.get('src')) == []:
+                    image_list.append(img.get('src'))
             item['images'] = image_list
         p_list = []
         if soup.find('div', class_="td-post-content td-pb-padding-side").select('p'):
