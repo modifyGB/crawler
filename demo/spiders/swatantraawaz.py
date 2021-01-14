@@ -21,10 +21,6 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
         'db': 'dg_test'
     }
 
-    def __init__(self, time=None, *args, **kwargs):
-        super(SwatantraawazSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
-        self.time = time
-
     def parse(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         for i in soup.select('.cat a'):  # 网站底部的目录，
@@ -33,32 +29,34 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
             if re.findall('category', url):
                 yield Request(url=url, meta=meta, callback=self.parse_essay)
             else:
-                self.logger.info('Wrong Url :')
-                self.logger.info(url)
+                self.logger.info('Wrong Url: '+ url)
         for i in soup.select('.cat_txt a'):
             meta = {'category1': i.text, 'category2': None}
             url = 'https://www.swatantraawaz.com' + i.get('href')
             if re.findall('category', url):
                 yield Request(url=url, meta=meta, callback=self.parse_essay)
             else:
-                self.logger.info('Wrong Url ')
-                self.logger.info(url)
+                self.logger.info('Wrong Url: '+url)
 
         for i in soup.select('#menu > ul > li')[1:-1]:   # 网站头部的目录
             meta = {'category1': i.select_one('a').text, 'category2': None}
             url = 'https://www.swatantraawaz.com' + i.select_one('a').get('href')
             try:
-                yield Request(url=url, meta=meta)  # 一级目录给parse_essay
+                yield Request(url=url, meta=meta, callback=self.parse_essay)  # 一级目录给parse_essay
             except:
                 self.logger.info('Wrong Url')
             try:
                 for j in i.select('ul>li>a'):
                     meta['category2'] = j.text
                     url = 'https://www.swatantraawaz.com' + j.get('href')
-                    self.logger.info('llllllllllllllllllllllll')
-                    yield Request(url=url, meta=meta, callback=self.parse)
+                    #self.logger.info('llllllllllllllllllllllll')
+                    yield Request(url=url, meta=meta, callback=self.parse_essay)
             except:
                 self.logger.info('No more category2!')
+
+    def __init__(self, time=None, *args, **kwargs):
+        super(SwatantraawazSpider, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        self.time = time
 
     def judge_pub_time(self, url):
         if self.time is None:
@@ -85,17 +83,17 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
     def parse_essay(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
-        for i in soup.select('.news_sa '):
-            url = 'https://www.swatantraawaz.com'+ i.select_one('.new_hed a').get('href')
-            if self.judge_pub_time(url):  # 未截止，True
+        judge_url = 'https://www.swatantraawaz.com' + soup.select('.news_sa ')[0].select_one('.new_hed a').get('href')
+        if self.judge_pub_time(judge_url):  # 未截止，True   # 找每页最后一个文章
+            for i in soup.select('.news_sa '):
                 response.meta['title'] = i.select_one('.new_hed a').text
                 response.meta['abstract'] = i.select_one('p').text
-                response.meta['images'] = ['https://www.swatantraawaz.com'+i.select_one('img').get('src')]
+                response.meta['images'] = ['https://www.swatantraawaz.com' + i.select_one('img').get('src')]
+                url = 'https://www.swatantraawaz.com' + i.select_one('.new_hed a').get('href')
                 yield Request(url=url, meta=response.meta, callback=self.parse_item)
-            else:
-                flag = False
-                self.logger.info('时间截止')
-                break
+        else:
+            flag = False
+            self.logger.info('时间截止')
         if flag:
             nextPage = 'https://www.swatantraawaz.com'+soup.select_one('.numac ~ a').get('href')
             yield Request(nextPage, meta=response.meta, callback=self.parse_essay)
