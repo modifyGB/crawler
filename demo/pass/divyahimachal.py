@@ -1,5 +1,5 @@
 import scrapy
-from Demo.items import DemoItem
+from demo.items import DemoItem
 from bs4 import BeautifulSoup as bs
 import re
 from datetime import datetime
@@ -16,7 +16,6 @@ def format_time2(s):
     :return: 返回2020-11-24 9:42:00
     '''
     pub_time = re.split(" |,|:|-|th|st|nd|rd", s)
-    print(pub_time)
     #文章里的时间切割完之后变这样['Aug', '19', '', '', '2010', '10', '33', 'am']
     # 翻页那里的时间切割王之后变成这样['October', '12', '', '2020']
     month = pub_time[0]
@@ -141,7 +140,6 @@ class divyahimachalSpider(scrapy.Spider):
             for div in div_list:
                 news_url = div.select_one("a").get("href")
                 yield scrapy.Request(news_url, callback=self.get_news_detail, meta={"item": item})  # 层与层之间通过meta参数传递数据
-                print("这是现在的item哦："+item)
             if self.time == None or format_time3(format_time2(soup.find_all("span", class_="byline")[-1].text.split(" ", 1)[1])) >= int(self.time):
                 url = soup.find("a",class_="next page-numbers").get("href") if soup.find("a",class_="next page-numbers").get("href")else None
                 if url:

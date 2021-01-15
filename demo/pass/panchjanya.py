@@ -48,33 +48,12 @@ class panchjanyaSpider(scrapy.Spider):
             else:
                 article_hrefs.append(article.select_one('a').get('href'))
         for detail_url in article_hrefs:
-            # yield Request(detail_url, callback=self.parse_detail)
-            check_soup = BeautifulSoup(requests.get(detail_url).content)     #不加content会出错，原因是因为这里的wb_data是requests对象，无法用BeautifulSoup解析
-            if check_soup.select_one('div.date_and_author_container span').text.split(" ")[1]:
-                temp_time = check_soup.select_one('div.date_and_author_container span').text.split(" ")[1]
-            else:
-                temp_time = check_soup.select_one('td.miscinfo').text.split(" ")[1]
-            adjusted_time = time_adjustment(temp_time)
-            self.logger.info("当前时间:"+adjusted_time+"$$$$$$$$$$$$$$")
-            if self.time is None or Util.format_time3(adjusted_time) >= int(self.time):
-                yield Request(detail_url, callback=self.parse_detail, meta={'category': category})
-            else:
-                self.logger.info("时间截止")
-                break
+            yield Request(detail_url, callback=self.parse_detail, meta={'category': category})
     def parse_detail(self, response):
         item = DemoItem()
         soup = BeautifulSoup(response.text, features='lxml')
-        if soup.select_one('div.date_and_author_container span').text.split(" ")[1]:
-            temp_time = soup.select_one('div.date_and_author_container span').text.split(" ")[1]
-        else:
-            temp_time = soup.select_one('td.miscinfo').text.split(" ")[1]
-        item['pub_time'] = time_adjustment(temp_time)
-        image_list = []
-        imgs = soup.select('div[align="center"] img') if soup.select('div[align="center"] img') else None
-        if imgs:
-            for img in imgs:
-                image_list.append(img.get('src'))
-            item['images'] = image_list
+        item['category1'] = response.meta['category']
+        item['title'] = soup.select_one('div.heading_container').text if soup.select_one('div.heading_container') else soup.select_one('.heading.clsNewsTitleHeading1').text
         p_list = []
         if soup.select('div.newscontent p'):
             all_p = soup.select('div.newscontent p')
@@ -83,11 +62,24 @@ class panchjanyaSpider(scrapy.Spider):
         for paragraph in all_p:
             p_list.append(paragraph.text)
         body = '\n'.join(p_list)
-        item['abstract'] = p_list[0]
+        if len(p_list):
+            item['abstract'] = p_list[0]
         item['body'] = body
-        item['category1'] = response.meta['category']
-        item['title'] = soup.select_one('div.heading_container').text if soup.select_one('div.heading_container').text else None
+        image_list = []
+        imgs = soup.select('div[align="center"] img') if soup.select('div[align="center"] img') else None
+        if imgs:
+            for img in imgs:
+                image_list.append(img.get('src'))
+            item['images'] = image_list
         yield item
+        if soup.select_one('div.date_and_author_container span'):
+            temp_time = soup.select_one('div.date_and_author_container span').text.split(" ")[1]
+        else:
+            temp_time = soup.select_one('td.miscinfo').text.split(" ")[1]
+        try:
+            item['pub_time'] = time_adjustment(temp_time)
+        except Exception:
+            item['pub_time'] = Util.format_time()
 def time_adjustment(input_time):
     time_elements = input_time.split("-")
     # print(time_elements[1]+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
@@ -109,7 +101,7 @@ def time_adjustment(input_time):
         month = "08"
     elif time_elements[1] == "सितंबर" or time_elements[1] == "à¤¸à¤¿à¤¤à¤à¤¬à¤°":
         month = "09"
-    elif time_elements[1] == "अक्टूबर" or time_elements[1] == "à¤à¤à¥à¤¤à¥à¤¬à¤°":
+    elif time_elements[1] == "अक्टूबर" or time_elements[1] == "à¤à¤à¥à¤¤à¥à¤¬à¤°" or time_elements[1] == "अक्तूबर":
         month = "10"
     elif time_elements[1] == "दिसंबर" or time_elements[1] == "à¤¨à¤µà¤à¤¬à¤°":
         month = "11"

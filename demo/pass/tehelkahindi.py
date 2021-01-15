@@ -56,8 +56,8 @@ class tehelkahindiSpider(scrapy.Spider):
                     next_url = soup.find("div", class_="page-nav td-pb-padding-side").select("a")[-1].get("href") if soup.find("div", class_="page-nav td-pb-padding-side") else None
                     if next_url:
                         yield scrapy.Request(next_url, meta=response.meta, callback=self.get_next_page)
-            else:
-                self.logger.info('时间截止')
+                else:
+                    self.logger.info('时间截止')
 
     def get_news_detail(self,response):
         '''
