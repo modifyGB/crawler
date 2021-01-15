@@ -60,9 +60,9 @@ class SinceindependenceSpider(scrapy.Spider):
     start_urls = ['https://hindi.sinceindependence.com/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_cbs',
-        'password': 'dg_cbs',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数
@@ -102,7 +102,7 @@ class SinceindependenceSpider(scrapy.Spider):
         next_url = next_button.get("href") if next_button else None
         if self.time is None:
             yield scrapy.Request(next_url, callback=self.parse_category1)
-        elif timestamp >= int(self.time) and next_button:
+        elif self.time and timestamp >= int(self.time) and next_button:
             yield scrapy.Request(next_url, callback=self.parse_category1)
         else:
             self.logger.info("时间截止")
