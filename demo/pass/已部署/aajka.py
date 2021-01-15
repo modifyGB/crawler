@@ -16,9 +16,9 @@ class aajkaSpider(scrapy.Spider):
     start_urls = ['https://aajka-samachar.in/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_lhl',
-        'password': 'dg_lhl',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
 
