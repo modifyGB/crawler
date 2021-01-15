@@ -49,6 +49,7 @@ class LegendnewsSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             nextPage = soup.select_one('.previous a').get('href')
             yield Request(nextPage, meta=response.meta, callback=self.parse)
