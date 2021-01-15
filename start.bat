@@ -1,1 +1,1 @@
-scrapy crawl dfa -a time=1610690066
+scrapy crawl bharatkhabar -a time=1610690066
