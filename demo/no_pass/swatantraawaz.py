@@ -61,7 +61,7 @@ class SwatantraawazSpider(scrapy.Spider):   # 小结：写这个爬虫的时候�
     def judge_pub_time(self, url):
         if self.time is None:
             return True
-        soup = BeautifulSoup(requests.get(url).text, 'html.parser')
+        soup = BeautifulSoup(requests.get(url).text)
         if re.findall('headline', url):
             tt = soup.select_one('.colort').text.split()   # 形如 ['Wednesday', '6', 'January', '2021', '02:12:12', 'PM']
             tt = tt[2]+' '+tt[1]+' '+tt[3]+' '+tt[4]+' '+tt[5]  # 形如 January 6 2021 02:12:12 PM

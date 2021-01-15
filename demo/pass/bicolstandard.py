@@ -39,7 +39,6 @@ class BicolstandardSpider(scrapy.Spider):
         if soup.find(class_="post-outer") != None:
             for i in soup.find_all(class_="post-title entry-title"):
                 news_url = i.find("a").get("href")
-                self.logger.info(news_url)
                 yield scrapy.Request(news_url,callback=self.parse_news,meta=response.meta)
 
             pub = soup.find_all(class_="published timeago")[-1].text.strip()
@@ -49,12 +48,9 @@ class BicolstandardSpider(scrapy.Spider):
             if self.time == None or Util.format_time3(Util.format_time2(pub)) >= int(self.time):
                 url = response.meta["url"] + "?updated-max={}&max-results=8#PageNo={}"
                 response.meta["p"] += 1
-                self.logger.info(url.format(time, response.meta["p"]))
                 yield scrapy.Request(url.format(time,response.meta["p"]),callback=self.parse_page,meta=response.meta)
             else:
                 self.logger.info('时间截止')
-
-        self.logger.info('\n')
 
     def parse_news(self,response):
         item = DemoItem()
@@ -73,7 +69,6 @@ class BicolstandardSpider(scrapy.Spider):
             body1 += (div.text.strip() + '\n')
         if body1 == '':
             body1 = content.text
-        self.logger.info(body1)
 
         body = ''
         for b in body1.split("\n"):
@@ -81,5 +76,4 @@ class BicolstandardSpider(scrapy.Spider):
                 body += (b + '\n')
         item["body"] = body
         item["abstract"] = body.split("\n")[0]
-        self.logger.info(item)
         yield item

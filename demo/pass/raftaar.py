@@ -62,6 +62,7 @@ class RaftaarSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             response.meta['offset'] += 20
             if response.meta['offset'] < js['total-count']:
@@ -75,7 +76,7 @@ class RaftaarSpider(scrapy.Spider):
         item['category1'] = response.meta['category1']
         item['abstract'] = soup.select_one('.element-wrapper  p').text  # 无摘要，正文就是一大
         item['body'] = soup.select_one('.element-wrapper  p ').text
-        item['images'] = [soup.find(class_='text-story-m__image-wrapper__2wk9r text-story-m__full-height__1hXUB').find('img').get('src')]
+        item['images'] = []
         item['category2'] = response.meta['category2']
         item['pub_time'] = response.meta['pub_time']
         # self.logger.info('item item item item item item item item item item item item')
