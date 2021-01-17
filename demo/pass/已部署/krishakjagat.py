@@ -15,11 +15,11 @@ class krishakjagatSpider(scrapy.Spider):
     start_urls = ['https://www.krishakjagat.org/',]
 
     sql = {  # sql配置
-            'host': '192.168.235.162',
-            'user': 'dg_admin',
-            'password': 'dg_admin',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
     def __init__(self, time=None, *args, **kwargs):
         super(krishakjagatSpider, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称
         self.time = time

@@ -20,9 +20,9 @@ class BanderaSpider(scrapy.Spider):#有很多403
                   'https://bandera.inquirer.net/category/lotto']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_rht',
-        'password': 'dg_rht',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     header = {

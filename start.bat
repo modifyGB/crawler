@@ -1,1 +1,1 @@
-scrapy crawl bharatkhabar -a time=1610690066
+scrapy crawl inextlive -a time=1610690066

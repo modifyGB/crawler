@@ -14,11 +14,11 @@ class BhopalsamacharSpider(scrapy.Spider):
     start_urls = ['https://www.bhopalsamachar.com/']
     website_id = 1054  # 网站的id(必填)
     language_id = 1930  # 所用语言的id
-    sql = {  # my sql 配置
+    sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_ldx',
-        'password': 'dg_ldx',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     api_url = 'https://www.bhopalsamachar.com/search/label/{}?updated-max={}'

@@ -52,9 +52,9 @@ class newstracklive(scrapy.Spider):
     start_urls = ['https://www.newstracklive.com/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_cxq',
-        'password': 'dg_cxq',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):
