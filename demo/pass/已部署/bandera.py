@@ -7,7 +7,7 @@ from scrapy.http import Request, Response
 import re
 import time
 from fake_useragent import UserAgent
-
+import socket
 
 class BanderaSpider(scrapy.Spider):#有很多403
     name = 'bandera'
@@ -34,6 +34,7 @@ class BanderaSpider(scrapy.Spider):#有很多403
         self.time = time
 
     def parse(self, response):
+        socket.setdefaulttimeout(30)
         soup = bs(response.text)
         for i in soup.select("#lmd-headline"):
             news_url = i.find("a").get("href")

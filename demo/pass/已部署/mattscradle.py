@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
-
+import socket
 
 #将爬虫类名和name字段改成对应的网站名
 class mattscradle(scrapy.Spider):
@@ -38,6 +38,7 @@ class mattscradle(scrapy.Spider):
             yield scrapy.Request(url,meta=meta,callback=self.parse_category2)
 
     def parse_category2(self,response):
+        socket.setdefaulttimeout(30)
         soup=BeautifulSoup(response.text,'lxml')
         url_list=soup.find_all('h2',class_='headline') if soup.find_all('h2',class_='headline') else None
         if(url_list):

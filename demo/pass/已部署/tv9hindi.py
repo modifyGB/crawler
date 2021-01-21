@@ -8,6 +8,7 @@ import re
 import time
 from datetime import datetime
 import requests
+import socket
 
 
 def tv9hindi_time_switch2(time_string):
@@ -52,6 +53,7 @@ class Tv9hindiSpider(scrapy.Spider):
                 c1, callback=self.parse_category1)
 
     def parse_category1(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
         news_url = []
         if re.match(r"\S+/page/\d+$", response.url):

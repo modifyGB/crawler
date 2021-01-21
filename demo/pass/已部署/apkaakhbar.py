@@ -7,7 +7,7 @@ import re
 import time
 import requests
 import json
-
+import socket
 
 class HbarSpider(scrapy.Spider):
     name = 'apkaakhbar'
@@ -44,6 +44,7 @@ class HbarSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         #yield Request(url='https://apkaakhbar.com/', callback=self.parse2, meta={'category1': 'Home'})
         #yield Request(url='https://apkaakhbar.com/', callback=self.parse_home, meta={'category1': 'Home'})
         soup = BeautifulSoup(requests.get(url='https://apkaakhbar.com/', headers=self.headers).text, 'html.parser')
@@ -52,6 +53,7 @@ class HbarSpider(scrapy.Spider):
             yield Request(url=i.get('href'), meta=meta, callback=self.parse)
 
     def judge_pub_time(self, url):  # 单独requests 拿pub_time
+        socket.setdefaulttimeout(30)
         if self.time == None:
             return True
         tt = BeautifulSoup(requests.get(url, headers=self.headers).text,

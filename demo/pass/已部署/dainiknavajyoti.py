@@ -9,6 +9,7 @@ from scrapy.http import Request, Response
 import re
 import time
 from datetime import datetime
+import socket
 
 #将爬虫类名和name字段改成对应的网站名
 class dainiknavajyotiSpider(scrapy.Spider):
@@ -44,6 +45,7 @@ class dainiknavajyotiSpider(scrapy.Spider):
             yield scrapy.Request(category, callback=self.parse_category)
 
     def parse_category(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
 
         article_hrefs = []

@@ -7,7 +7,6 @@ from scrapy.http import Request, Response
 import re
 import time
 from datetime import datetime
-import requests
 
 
 def sinceindependece_time_switch1(time_string):

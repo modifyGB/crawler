@@ -1,4 +1,4 @@
-
+import socket
 # 此文件包含的头文件不要修改
 import requests
 import scrapy
@@ -31,6 +31,7 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
         category_hrefList = []
         # category_nameList = []
@@ -63,7 +64,6 @@ class dainiksandhyaprakashSpider(scrapy.Spider):
             for detail_url in article_hrefs:
                 yield Request(detail_url, callback=self.parse_detail)
 
-            # check_soup = BeautifulSoup(requests.get(article_hrefs[-1]).content)     #不加content会出错，原因是因为这里的wb_data是requests对象，无法用BeautifulSoup解析
             temp_time = soup.select('div.td-ss-main-content span.td-post-date')[-1].text if soup.select('div.td-ss-main-content span.td-post-date')[-1].text else None
             adjusted_time = time_adjustment(temp_time)
             if self.time == None or Util.format_time3(adjusted_time) >= int(self.time):

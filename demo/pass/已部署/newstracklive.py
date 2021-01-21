@@ -6,6 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
+import socket
 
 def time_font(time_past):
     #%Y-%m-%d %H:%M:%S
@@ -77,6 +78,7 @@ class newstracklive(scrapy.Spider):
             yield Request(i , callback=self.parse_2)
 
     def parse_2(self , response ,  **kwargs):
+        socket.setdefaulttimeout(30)
         page_soup = BeautifulSoup(response.text, 'lxml')
         category1 = page_soup.select('div.main-title-outer.pull-left div.main-title')[0].text.strip()
         item = DemoItem()

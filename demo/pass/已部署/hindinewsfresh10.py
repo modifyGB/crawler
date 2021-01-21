@@ -1,4 +1,4 @@
-
+import socket
 # 此文件包含的头文件不要修改
 import requests
 import scrapy
@@ -82,6 +82,7 @@ class aajkaSpider(scrapy.Spider):
         yield item
 
     def parse_previous(self, response):
+        socket.setdefaulttimeout(30)
         if BeautifulSoup(response.text, features="lxml").select('div.post-outer'):
             soup = BeautifulSoup(response.text, features="lxml")
             articles = soup.find_all('h2', class_="post-title entry-title")

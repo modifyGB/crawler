@@ -1,5 +1,4 @@
 # 此文件包含的头文件不要修改
-import requests
 import scrapy
 from demo.util import Util
 from demo.items import DemoItem

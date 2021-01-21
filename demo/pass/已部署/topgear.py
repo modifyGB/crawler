@@ -7,6 +7,7 @@ import re
 import time
 import json
 import requests
+import socket
 
 class topgearSpider(scrapy.Spider):
     name = 'topgear'
@@ -50,6 +51,7 @@ class topgearSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         category1 = 'launch-pad'
         for category in self.categorys:
 
