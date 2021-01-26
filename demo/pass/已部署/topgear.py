@@ -68,7 +68,7 @@ class topgearSpider(scrapy.Spider):
 
             for i in range(0,100000):
                 js = json.loads(requests.get('https://api.summitmedia-digital.com/topgear/v1/channel/get/{}/{}/{}'.format(category,i,10),headers=self.header).text)
-                if len(js)==0 or js[0]['date_published'] < int(self.time):
+                if len(js)==0 or (self.time != None and js[0]['date_published'] < int(self.time)):
                     self.logger.info('截止')
                     break
                 else:
