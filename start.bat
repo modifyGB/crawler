@@ -1,1 +1,1 @@
-scrapy crawl aajka -a time=1612159470
+scrapy crawl maharashtratimes -a time=1612159470

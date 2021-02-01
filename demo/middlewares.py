@@ -56,7 +56,14 @@ class DemoDownloaderMiddleware:
         result = self.cur.fetchall()
 
         if result == ():
-            request.headers['User-Agent'] = str(UserAgent().random)
+            if 'User-Agent' in request.meta:
+                request.headers['User-Agent'] = request.meta['User-Agent']
+            else:
+                request.headers['User-Agent'] = str(UserAgent().random)
+
+            if 'Cookie' in request.meta:
+                request.headers['Cookie'] = request.meta['Cookie']
+
             # request.meta['proxy'] = 'http://192.168.235.227:8888'
             return None
         else:

@@ -77,9 +77,4 @@ class NhandanSpider(scrapy.Spider):
         for img in soup.select(".media .nd_img"):
             images.append("https://cn.nhandan.com.vn/" + img.get("src"))
         item['images'] = images
-        item['cole_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
-        item['website_id'] = self.website_id
-        item['language_id'] = self.language_id
-        item['request_url'] = response.request.url
-        item['response_url'] = response.url
         yield item
