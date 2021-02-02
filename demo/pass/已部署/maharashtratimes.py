@@ -13,11 +13,11 @@ class maharashtratimesSpider(scrapy.Spider):
     language_id = 1930  # 所用语言的id
     start_urls = ['https://maharashtratimes.com/']
     sql = {  # sql配置
-            'host': '127.0.0.1',#新的
-            'user': 'root',
-            'password': 'asdfghjkl',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
 
     def __init__(self, time=None, *args, **kwargs):
         super(maharashtratimesSpider, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称

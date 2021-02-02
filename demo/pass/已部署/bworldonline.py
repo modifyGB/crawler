@@ -8,15 +8,15 @@ import json
 
 class bworldonlineSpider(scrapy.Spider):
     name = 'bworldonline'
-    website_id = 483 # 网站的id(必填)
+    website_id = 191 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
     start_urls = ['https://www.bworldonline.com/']
     sql = {  # sql配置
-            'host': '127.0.0.1',#新的
-            'user': 'root',
-            'password': 'asdfghjkl',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
 
     data = {
     'action': 'td_ajax_loop',

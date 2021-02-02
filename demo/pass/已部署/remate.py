@@ -20,11 +20,11 @@ class RemateSpider(scrapy.Spider):
     website_id = 533
     language_id = 2117
     sql = {  # sql配置
-            'host': '127.0.0.1',#新的
-            'user': 'root',
-            'password': 'asdfghjkl',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
     def __init__(self, time=None, *args, **kwargs):
         super(RemateSpider, self).__init__(*args, **kwargs)
         self.time = time
