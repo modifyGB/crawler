@@ -41,10 +41,12 @@ class maharashtratimesSpider(scrapy.Spider):
         for i in html.select('#childrenContainer > div .row.undefined li .con_wrap > a')[:-1]:
             yield Request(i.attrs['href'],callback=self.parse_detail)
         # 这里在列表中挑选最后一篇文章并传给parse_page，并通过meta把对应的列表信息也传过去用于翻页，dont_filter防止文章被查重
+        response.meta['dont_filter'] = True
         yield Request(html.select('#childrenContainer > div .row.undefined li .con_wrap > a')[-1].attrs['href'],callback=self.parse_page,meta=response.meta,dont_filter=True)
 
     def parse_page(self, response): # 用于判断是否截止
         html = BeautifulSoup(response.text)
+        response.meta['dont_filter'] = False
         list = re.findall(r'\d+ \S+ \d+, \d+:\d+:\d+',html.select('.source .time')[0].text)[0].split(' ')
         timetext = time.strftime("%Y-%m-%d ", datetime(int(list[2].split(',')[0]),Util.month[list[1]],int(list[0])).timetuple())+list[3]
         if self.time == None or Util.format_time3(timetext) >= int(self.time):

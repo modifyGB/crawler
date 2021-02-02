@@ -1,11 +1,7 @@
 
 from scrapy import signals
-import re
 import pymysql
-import execjs
-import requests
-from itemadapter import is_item, ItemAdapter
-from scrapy.http import Request, Response
+from scrapy.http import Request
 from fake_useragent import UserAgent
 from scrapy.exceptions import IgnoreRequest
 
@@ -55,7 +51,7 @@ class DemoDownloaderMiddleware:
         self.cur.execute('select request_url from news where request_url = %s',request.url)
         result = self.cur.fetchall()
 
-        if result == ():
+        if ('dont_filter' in request.meta and request.meta['dont_filter'] == True) or result == ():
             if 'User-Agent' in request.meta:
                 request.headers['User-Agent'] = request.meta['User-Agent']
             else:
@@ -68,7 +64,7 @@ class DemoDownloaderMiddleware:
             return None
         else:
             spider.logger.info('filtered url')
-            return IgnoreRequest
+            return IgnoreRequest()
 
     def spider_opened(self, spider): 
         self.db = pymysql.connect(

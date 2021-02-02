@@ -4,8 +4,6 @@ from demo.util import Util
 from demo.items import DemoItem
 from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
-import re
-import time
 from datetime import datetime
 
 def headlinehindi_time_switch1(time_string):
@@ -28,11 +26,11 @@ class HeadlinehindiSpider(scrapy.Spider):
     language_id = 1930  # 所用语言的id
     start_urls = ['https://www.headlinehindi.com/']
     sql = {  # sql配置
-        'host': '192.168.235.162',
-        'user': 'dg_cbs',
-        'password': 'dg_cbs',
-        'db': 'dg_test'
-    }
+            'host': '127.0.0.1',#新的
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     # 这是类初始化函数，用来传时间戳参数
     def __init__(self, time=None, *args, **kwargs):
@@ -73,7 +71,7 @@ class HeadlinehindiSpider(scrapy.Spider):
         soup = BeautifulSoup(response.text, features="lxml")
         item['title'] = soup.select_one(".wpb_wrapper div div h1").text.strip()
         item['pub_time'] = headlinehindi_time_switch2(soup.select_one(".wpb_wrapper div div time").get("datetime"))
-        images = [soup.select_one(".wpb_wrapper div div .td-modal-image").get("data-src")]
+        images = [soup.select_one(".wpb_wrapper div div .td-modal-image").get("data-src")] if soup.select_one(".wpb_wrapper div div .td-modal-image") else []
         item['images'] = images
         body = ""
         body_content = soup.select(".wpb_wrapper div.tdb-block-inner.td-fix-index p")
@@ -81,13 +79,8 @@ class HeadlinehindiSpider(scrapy.Spider):
             body += b.text.strip()+"\n"
         item['body'] = body
         item['abstract'] = body
-        item['cole_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
         item['category1'] = soup.select(".wpb_wrapper div.tdb-block-inner.td-fix-index span a")[1].text.strip()
         item['category2'] = None
-        item['website_id'] = self.website_id
-        item['language_id'] = self.language_id
-        item['request_url'] = response.request.url
-        item['response_url'] = response.url
         yield item
 
 
