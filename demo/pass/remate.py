@@ -20,17 +20,17 @@ class RemateSpider(scrapy.Spider):
     website_id = 533
     language_id = 2117
     sql = {  # sql配置
-        'host': '192.168.235.162',
-        'user': 'dg_rht',
-        'password': 'dg_rht',
-        'db': 'dg_test'
-    }
+            'host': '127.0.0.1',#新的
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
     def __init__(self, time=None, *args, **kwargs):
         super(RemateSpider, self).__init__(*args, **kwargs)
         self.time = time
 
     def parse(self, response):
-        soup = bs(response.text,"html.parser")
+        soup = bs(response.text)
 
         a_list = ["https://www.remate.ph" + a.find("a").get("href") for a in soup.find_all("div","vc_btn3-container vc_btn3-center")]if soup.find_all("div","vc_btn3-container vc_btn3-center") else None
         if a_list:
@@ -41,7 +41,7 @@ class RemateSpider(scrapy.Spider):
 
     def parse_page(self,response):
         meta = {}
-        soup = bs(response.text,"html.parser")
+        soup = bs(response.text)
         category1 = soup.select(".breadcrumb > li")[1].text if soup.select(".breadcrumb > li") else None
         if category1 == 'SPORTS' or category1 == 'OPINION' or category1 == 'TECH TREND':
             category2 = None
@@ -52,9 +52,7 @@ class RemateSpider(scrapy.Spider):
         for i in soup.find_all(class_="entry-title"):
             news_url = i.find("a").get("href")
             yield scrapy.Request(news_url,callback=self.parse_news,meta=meta)
-        pub_time = soup.find_all(class_="meta-date")[-1].text.strip()
-        pub_time = re.findall(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+',pub_time)[0]
-        if self.time == None or Util.format_time3(pub_time) >= int(self.time):
+        if self.time == None or Util.format_time3(Util.format_time2(soup.select('article .meta-date')[-1].text)) >= int(self.time):
             url = soup.find(class_="next page-numbers").get("href") if soup.find(class_="next page-numbers") else None
             if url:
                 yield scrapy.Request(url,callback=self.parse_page)
@@ -63,24 +61,12 @@ class RemateSpider(scrapy.Spider):
 
 
     def parse_news(self,response):
-        soup = bs(response.text,"html.parser")
+        soup = bs(response.text)
         item = DemoItem()
 
         item["category1"] = response.meta["category1"]
         item["category2"] = response.meta["category2"]
-        # div = soup.find("div","main-content col-lg-9").select_one("div > article")
-        pub_time = soup.select_one("#content > article > div.post-content > div > span").text.strip() if soup.select_one("#content > article > div.post-content > div > span") else "0000-00-00 00:00:00"
-        if pub_time:
-            pub = re.compile(r'\w+').findall(pub_time)
-            pu = pub[-1]
-            pub.pop()
-            p_time = ''
-            for p in pub:
-                p_time += p
-            pub_time = str(datetime.datetime.strptime(p_time,'%B%d%Y%I%M')) + pu
-            pub_time = re.findall(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+',pub_time)[0]
-            self.logger.info(pub_time)
-        item["pub_time"] = pub_time
+        item["pub_time"] = Util.format_time2(soup.select('article .meta-date')[0].text)
 
         title = soup.select_one("#content > article > h1").text.strip() if soup.select_one("#content > article > h1") else None
         item["title"] = title
@@ -96,6 +82,5 @@ class RemateSpider(scrapy.Spider):
             body = "\n".join(body)
         item["abstract"] = abstract
         item["body"] = body
-        print(item)
-        # yield item
+        yield item
 

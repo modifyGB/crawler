@@ -37,9 +37,8 @@ class bworldonlineSpider(scrapy.Spider):
 
     def parse(self, response):
         html = BeautifulSoup(response.text)
-        if response.url == 'https://www.bworldonline.com/':
-            for i in html.select('#menu-main-menu > li > a[href^="https://www.bworldonline.com/category/"]'):
-                yield Request(i.attrs['href'], callback=self.parse1)
+        for i in html.select('#menu-main-menu > li > a[href^="https://www.bworldonline.com/category/"]'):
+            yield Request(i.attrs['href'], callback=self.parse1)
 
     def parse1(self, response):
         html = BeautifulSoup(response.text)
