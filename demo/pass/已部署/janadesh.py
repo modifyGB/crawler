@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
-import requests
 
 
 class JanaSpider(scrapy.Spider):    # 这个网站 虚假翻页，完全没变

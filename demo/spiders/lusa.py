@@ -19,11 +19,11 @@ class lusaSpider(scrapy.Spider):
     language_id = 2122  # 所用语言的id
     start_urls = ['https://www.lusa.pt']
     sql = {  # sql配置
-        'host': '192.168.235.162',
-        'user': 'dg_lhl',
-        'password': 'dg_lhl',
-        'db': 'dg_test'
-    }
+            'host': '127.0.0.1',#新的
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     # 这是类初始化函数，用来传时间戳参数
     def __init__(self, time=None, *args, **kwargs):

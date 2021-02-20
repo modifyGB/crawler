@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup as bs
 from scrapy.http import Request, Response
 import re
 import time
-import requests
 
 
 class MbSpider(scrapy.Spider):

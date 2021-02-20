@@ -1,5 +1,4 @@
 import scrapy
-import requests
 from demo.util import Util
 from demo.items import DemoItem
 from bs4 import BeautifulSoup

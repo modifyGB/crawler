@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup as bs
 from scrapy.http import Request, Response
 import re
 import time
-
+from fake_useragent import UserAgent
+import socket
 
 class BanderaSpider(scrapy.Spider):#有很多403
     name = 'bandera'
@@ -19,9 +20,13 @@ class BanderaSpider(scrapy.Spider):#有很多403
                   'https://bandera.inquirer.net/category/lotto']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_rht',
-        'password': 'dg_rht',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
+
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'
     }
 
     def __init__(self, time=None, *args, **kwargs):
@@ -29,13 +34,15 @@ class BanderaSpider(scrapy.Spider):#有很多403
         self.time = time
 
     def parse(self, response):
-        soup = bs(response.text,"html.parser")
+        socket.setdefaulttimeout(30)
+        soup = bs(response.text)
         for i in soup.select("#lmd-headline"):
             news_url = i.find("a").get("href")
             yield scrapy.Request(news_url,callback=self.parse_news)
 
         url = soup.select("#lmd-headline")[-1].find("a").get("href")
-        soup1 = bs(requests.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'}).text,"html.parser")
+        self.header['User-Agent'] = str(UserAgent().random)
+        soup1 = bs(requests.get(url,headers=self.header).text)
         pub = soup1.find(id ="m-pd2").find_all("span")[-1].text
         if self.time == None or Util.format_time3(Util.format_time2(pub)) >= int(self.time):
             for a in soup.select("#landing-read-more > a"):
@@ -47,7 +54,7 @@ class BanderaSpider(scrapy.Spider):#有很多403
 
     def parse_news(self,response):
         item = DemoItem()
-        soup = bs(response.text,"html.parser")
+        soup = bs(response.text)
 
         item["category1"] = soup.select_one("#m-bread2 > a").text
         item["category2"] = None
@@ -65,6 +72,5 @@ class BanderaSpider(scrapy.Spider):#有很多403
                 body += (p.text.strip() + '\n')
         item["body"] = body
 
-        self.logger.info(item)
         yield item
 

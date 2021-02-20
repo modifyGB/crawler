@@ -7,6 +7,7 @@ import re
 import time
 import execjs
 import requests
+import socket
 
 class ptvnewsSpider(scrapy.Spider):
     name = 'ptvnews'
@@ -28,6 +29,7 @@ class ptvnewsSpider(scrapy.Spider):
         self.time = time
 
     def html_get(self, response):
+        socket.setdefaulttimeout(30)
         header = self.headers
         js = re.findall(r'<script>(.+)</script>',response.text)[0]
         ctx1 = execjs.compile('function fun(){'+js.replace('e(r)','return r')+'}') 

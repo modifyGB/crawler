@@ -6,6 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
+import socket
 
 # 就 主页面之下的各类新闻，和二级目录 News 有要爬取的文章
 # 发现 News 目录下的文章不属于本域名的文章
@@ -29,6 +30,7 @@ class DhindSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('https://www.dailyhindinews.com/').text, 'html.parser')
         cate1_lis = [i.text for i in soup.select('h4.widget-title')[1:9]]
         # self.logger.info(cate1_lis)

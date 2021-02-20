@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
-
+import socket
 
 class AajtSpider(scrapy.Spider):
     name = 'aajtak'
@@ -57,11 +57,13 @@ class AajtSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):  # 进入一级目录
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('https://www.aajtak.in/').text, 'html.parser')
         for i in soup.select('.at-menu li a')[2:-1]:
             yield Request(url=i.get('href'),meta={'category1':i.text},callback=self.parse)
 
     def parse(self, response):  # 进入二级目录
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, 'html.parser')
         for i in soup.select('.widget-title a'):   # 静态加载的二级目录
             response.meta['category2'] = i.text
@@ -82,6 +84,7 @@ class AajtSpider(scrapy.Spider):
             self.logger.info('No more dynamic category2 loading!')
 
     def parse_essay(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, 'html.parser')
         flag = True
         for i in soup.select('.widget-listing '):  # 静态文章列表

@@ -1,4 +1,4 @@
-import requests
+
 import scrapy
 from demo.util import Util
 from demo.items import DemoItem
@@ -14,11 +14,11 @@ class LegendnewsSpider(scrapy.Spider):
     website_id = 1051  # 网站的id(必填)
     start_urls = ['http://legendnews.in/']
     language_id = 1930  # 所用语言的id
-    sql = {  # my sql 配置
+    sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_ldx',
-        'password': 'dg_ldx',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):
@@ -49,6 +49,7 @@ class LegendnewsSpider(scrapy.Spider):
             else:
                 flag = False
                 self.logger.info('时间截止')
+                break
         if flag:
             nextPage = soup.select_one('.previous a').get('href')
             yield Request(nextPage, meta=response.meta, callback=self.parse)
