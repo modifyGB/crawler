@@ -1,4 +1,3 @@
-import requests
 # 此文件包含的头文件不要修改
 import scrapy
 from demo.util import Util
@@ -6,7 +5,6 @@ from demo.items import DemoItem
 from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
-import time
 
 
 class awesome(scrapy.Spider):
@@ -16,11 +14,11 @@ class awesome(scrapy.Spider):
     website_id = 1243  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
-    }
+            'host': '127.0.0.1',#新的
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     def __init__(self, time=None, *args, **kwargs):
         super(awesome, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称
@@ -48,8 +46,8 @@ class awesome(scrapy.Spider):
             response.meta['abstract'] = d.select_one("div.entry-content p").text  # 获取摘要
             yield scrapy.Request(detail_url, meta=response.meta, callback=self.parse_category3)
 
-        if html.select("time.entry-date.published.updated"):
-            ddl = html.select_one("time.entry-date.published.updated")['datetime']  # datetime="2021-01-30T23:00:00+08:00"
+        if html.select("time.entry-date.published"):
+            ddl = html.select_one("time.entry-date.published")['datetime']  # datetime="2021-01-30T23:00:00+08:00"
             ddl = re.split('T|\+', ddl)  # ['2021-01-30', '23:00:00', '08:00']
             ddl = ddl[0] + ' ' + ddl[1]  # 2021-01-30 23:00:00
             ddl = Util.format_time3(ddl)  # 1612018800
@@ -59,7 +57,7 @@ class awesome(scrapy.Spider):
         next_page = html.select("div.nav-links div.nav-previous")
         if next_page:
             next_page_url = next_page[0].select_one("a")['href']
-            if (self.time == None or ddl >= int(self.time)):
+            if (self.time == None or (ddl != None and ddl >= int(self.time))):
                 yield scrapy.Request(next_page_url, meta=response.meta, callback=self.parse_category2)
             else:
                 self.logger.info('时间截止')

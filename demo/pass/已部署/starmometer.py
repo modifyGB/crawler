@@ -14,13 +14,12 @@ class starmometer(scrapy.Spider):
     website_id = 1239 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
     start_urls = ['https://starmometer.com/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_gfy',
-        'password' : 'dg_gfy',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
-
     # 这是类初始化函数，用来传时间戳参数
     def __init__(self, time=None, *args, **kwargs):
         super(starmometer, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称

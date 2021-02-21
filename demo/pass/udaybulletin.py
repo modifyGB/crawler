@@ -5,10 +5,8 @@ from demo.util import Util
 from demo.items import DemoItem
 from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
-import requests
 import json
 import time
-import re
 
 #将爬虫类名和name字段改成对应的网站名
 class liveakhbar(scrapy.Spider):
@@ -17,11 +15,11 @@ class liveakhbar(scrapy.Spider):
     language_id = 1930 # 所用语言的id
     start_urls = ['https://www.udaybulletin.com/']
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cf',
-        'password': 'dg_cf',
-        'db': 'dg_test_source'
-    }
+            'host': '127.0.0.1',
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     # 这是类初始化函数，用来传时间戳参数
     def __init__(self, time=None, *args, **kwargs):
@@ -30,7 +28,7 @@ class liveakhbar(scrapy.Spider):
 
     ##需补充爬取时间代码
     def judge_time(self,time_pub):
-        if self.time == None or self.time <= time_pub:
+        if self.time == None or int(self.time) <= time_pub:
             return True
         else:
             return False
@@ -66,12 +64,12 @@ class liveakhbar(scrapy.Spider):
         all_response = json.loads(response.text)
         flag = True
         ##需要测试一下
-        for number in range(0,10):
-            url = all_response['items'][number]['story']['url']
-            response.meta['title'] = all_response['items'][number]['story']['headline']
-            if self.judge_time(all_response['items'][number]['story']['content-updated-at']):
+        for number in all_response['items']:
+            url = number['story']['url']
+            response.meta['title'] = number['story']['headline']
+            if self.judge_time(int(int(number['story']['content-updated-at']) / 1000)):
                 #爬取网页信息
-                response.meta['pub_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(all_response['items'][number]['story']['content-created-at'] / 1000))
+                response.meta['pub_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(number['story']['content-created-at'] / 1000))
                 yield Request(url=url,meta=response.meta,callback=self.parse_item)
             else:
                 self.logger.info("时间截止！！！！！！！！！！！！")
@@ -94,10 +92,8 @@ class liveakhbar(scrapy.Spider):
             item['abstract'] = None
         item['pub_time'] = response.meta['pub_time']
         body = ''
-        all_body = html.select('p')
-        body = body + all_body[0].text + '\n'
-        body = body + all_body[1].text + '\n'
-        body = body + all_body[3].text + '\n'
+        for i in html.select('.arr--story-page-card-wrapper p'):
+            body = body + i.text + '\n'
         item['body'] = body
         try:
             item['images'] = [html.select_one('figure img').attrs['data-src']]

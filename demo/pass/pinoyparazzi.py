@@ -16,11 +16,11 @@ class pinoyparazzi(scrapy.Spider):
     website_id = 1241  # 网站的id(必填)
     language_id = 1880  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
-    }
+            'host': '127.0.0.1',
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     def __init__(self, time=None, *args, **kwargs):
         super(pinoyparazzi, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称

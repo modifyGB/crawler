@@ -1,4 +1,3 @@
-import requests
 # 此文件包含的头文件不要修改
 import scrapy
 from demo.util import Util
@@ -6,7 +5,6 @@ from demo.items import DemoItem
 from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
-import time
 
 
 class coolbuster(scrapy.Spider):
@@ -16,11 +14,11 @@ class coolbuster(scrapy.Spider):
     website_id = 1238  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
-    }
+            'host': '127.0.0.1',
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     def __init__(self, time=None, *args, **kwargs):
         super(coolbuster, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称

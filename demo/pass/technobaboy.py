@@ -6,7 +6,6 @@ from demo.items import DemoItem
 from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
-import time
 
 header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'}
 
@@ -17,11 +16,11 @@ class technobaboy(scrapy.Spider):
     website_id = 1246  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
-    }
+            'host': '127.0.0.1',
+            'user': 'root',
+            'password': 'asdfghjkl',
+            'db': 'dg_test'
+        }
 
     def __init__(self, time=None, *args, **kwargs):
         super(technobaboy, self).__init__(*args, **kwargs) # 将这行的DemoSpider改成本类的名称
