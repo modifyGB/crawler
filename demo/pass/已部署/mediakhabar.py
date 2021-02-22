@@ -1,4 +1,4 @@
-import requests
+
 import scrapy
 from demo.util import Util
 from demo.items import DemoItem

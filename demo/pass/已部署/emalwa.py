@@ -6,7 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
-
+import socket
 
 class EmalSpider(scrapy.Spider):
     name = 'emalwa'
@@ -26,6 +26,7 @@ class EmalSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('https://emalwa.com/', headers=self.headers).text, 'html.parser')
         for i in soup.select('#menu-final-main-menu-1 li>a')[1:-1]:
             meta = {'category1': i.text}
