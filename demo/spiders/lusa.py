@@ -19,7 +19,7 @@ class lusaSpider(scrapy.Spider):
     language_id = 2122  # 所用语言的id
     start_urls = ['https://www.lusa.pt']
     sql = {  # sql配置
-            'host': '127.0.0.1',#新的
+            'host': '127.0.0.1',
             'user': 'root',
             'password': 'asdfghjkl',
             'db': 'dg_test'
