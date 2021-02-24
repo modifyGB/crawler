@@ -14,11 +14,11 @@ class spin_Spider(scrapy.Spider):
     language_id = 1866 # 所用语言的id
     start_urls = ['https://www.spin.ph/?ref=nav', 'https://www.spin.ph/life?ref=nav']
     sql = {  # sql配置
-            'host': '127.0.0.1',
-            'user': 'root',
-            'password': 'asdfghjkl',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
 
     # 这是类初始化函数，用来传时间戳参数
     def __init__(self, time=None, *args, **kwargs):
