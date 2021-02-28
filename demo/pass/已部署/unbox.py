@@ -7,6 +7,7 @@ import re
 import json
 import time
 import requests
+import socket
 
 class unboxSpider(scrapy.Spider):
     name = 'unbox'
@@ -49,6 +50,7 @@ class unboxSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         for i in range(1,5000):
             self.data['page'] = str(i)
             html = BeautifulSoup(json.loads(json.loads(requests.post('https://www.unbox.ph/wp-admin/admin-ajax.php',data=self.data,headers=self.header,proxies={"http": "http://192.168.235.227:8888","https": "https://192.168.235.227:8888"}).text))['code'])

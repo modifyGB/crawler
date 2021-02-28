@@ -6,7 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
-
+import socket
 
 class NwinSpider(scrapy.Spider):
     name = 'newswing'
@@ -26,6 +26,7 @@ class NwinSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('https://newswing.com/').text, 'html.parser')
         for i in soup.select('#menu-main-navigation >li a'):
             meta = {'category1':i.text, 'category2':''}

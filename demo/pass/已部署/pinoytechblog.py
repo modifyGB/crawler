@@ -1,4 +1,4 @@
-import requests
+
 # 此文件包含的头文件不要修改
 import scrapy
 from demo.util import Util
