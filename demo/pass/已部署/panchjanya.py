@@ -70,7 +70,6 @@ class panchjanyaSpider(scrapy.Spider):
             for img in imgs:
                 image_list.append(img.get('src'))
             item['images'] = image_list
-        yield item
         if soup.select_one('div.date_and_author_container span'):
             temp_time = soup.select_one('div.date_and_author_container span').text.split(" ")[1]
         else:
@@ -79,6 +78,7 @@ class panchjanyaSpider(scrapy.Spider):
             item['pub_time'] = time_adjustment(temp_time)
         except Exception:
             item['pub_time'] = Util.format_time()
+        yield item
 def time_adjustment(input_time):
     time_elements = input_time.split("-")
     # print(time_elements[1]+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
