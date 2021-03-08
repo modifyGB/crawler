@@ -15,9 +15,9 @@ class coconuts(scrapy.Spider):# cyl
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_rht',
-        'password': 'dg_rht',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):

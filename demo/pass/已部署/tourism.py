@@ -17,10 +17,10 @@ class tourismSpider(scrapy.Spider):# zdx
     language_id = 1866 # 所用语言的id
     start_urls = ['http://www.tourism.gov.ph/']
     sql = {  # sql配置
-        'host': 'localhost',
-        'user': 'root',
-        'password': 'asdfghjkl',
-        'db': 'dg_test'
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数
