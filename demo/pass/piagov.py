@@ -9,21 +9,21 @@ import re
 import time
 import json
 
-class gov(scrapy.Spider):
-    name = 'gov'
+class piagov(scrapy.Spider):# cyl
+    name = 'piagov'
     # allowed_domains = ['https://pia.gov.ph/']
     start_urls = ['https://pia.gov.ph/']
     website_id = 1231  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
+        'host': 'localhost',
+        'user': 'root',
+        'password': 'asdfghjkl',
+        'db': 'dg_test'
     }
 
     def __init__(self, time=None, *args, **kwargs):
-        super(gov, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
+        super(piagov, self).__init__(*args, **kwargs)  # 将这行的DemoSpider改成本类的名称
         self.time = time
 
     def parse(self, response):
@@ -86,8 +86,7 @@ class gov(scrapy.Spider):
                 pass
             else:
                 for a in article:
-                    article_id = a['id']
-                    detail_url = 'https://pia.gov.ph/' + cat + '/articles/' + str(article_id)
+                    detail_url = a['url']
                     yield scrapy.Request(detail_url, meta=response.meta, callback=self.parse_detail)
 
                 if 'iso' in article[-1]['headlineDate']['timeStamp'].keys():
@@ -135,4 +134,8 @@ class gov(scrapy.Spider):
                 pub_time = pub_time[0]
                 pub_time = Util.format_time2(pub_time)
                 item['pub_time'] = pub_time
+            else:
+                item['pub_time'] = Util.format_time()
+        else:
+            item['pub_time'] = Util.format_time()
         yield item

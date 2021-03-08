@@ -8,16 +8,16 @@ from scrapy.http import Request, Response
 import re
 import time
 
-class coconuts(scrapy.Spider):
+class coconuts(scrapy.Spider):# cyl
     name = 'coconuts'
     start_urls = ['https://coconuts.co/']
     website_id = 1247  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
+        'host': '192.168.235.162',
+        'user': 'dg_rht',
+        'password': 'dg_rht',
+        'db': 'dg_test'
     }
 
     def __init__(self, time=None, *args, **kwargs):
@@ -48,6 +48,7 @@ class coconuts(scrapy.Spider):
                 continue
             response.meta['category2'] = cat2
             cat2_url = c['href']
+            # self.logger.info('第二个'+cat2_url)
             yield scrapy.Request(cat2_url, meta=response.meta, callback=self.parse_category3)
 
     def parse_category3(self, response):
@@ -56,6 +57,7 @@ class coconuts(scrapy.Spider):
         page_number = 1
         response.meta['page_number'] = page_number
         request_url = request_url1 + 'page/' + str(page_number) + '/'
+        # self.logger.info('第三个'+request_url)
         yield scrapy.Request(request_url, meta=response.meta, callback=self.parse_category4, dont_filter=True)
 
 
@@ -73,10 +75,11 @@ class coconuts(scrapy.Spider):
                 ddl = Util.format_time3(ddl)
             else:
                 ddl = None
-            if (self.time == None or ddl >= int(self.time)):
+            if (self.time == None or (ddl != None and ddl >= int(self.time))):
                 response.meta['page_number'] = response.meta['page_number'] + 1
                 request_url1 = response.meta['request_url']
-                request_url = request_url1 + 'page/' + str(page_number) + '/'
+                request_url = request_url1 + 'page/' + str(response.meta['page_number']) + '/'
+                # self.logger.info('第四个'+request_url)
                 yield scrapy.Request(request_url, meta=response.meta, callback=self.parse_category4)
             else:
                 self.logger.info('时间截止')

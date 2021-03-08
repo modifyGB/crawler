@@ -10,17 +10,17 @@ import time
 
 header = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'}
 
-class clickthecity(scrapy.Spider):
+class clickthecity(scrapy.Spider):# cyl
     name = 'clickthecity'
     # allowed_domains = ['https://www.clickthecity.com/']
     start_urls = ['https://www.clickthecity.com/']
     website_id = 1248  # 网站的id(必填)
     language_id = 1866  # 所用语言的id
     sql = {  # sql配置
-        'host': '121.36.242.178',
-        'user': 'dg_cyl',
-        'password': 'dg_cyl',
-        'db': 'dg_test_source'
+        'host': '192.168.235.162',
+        'user': 'dg_rht',
+        'password': 'dg_rht',
+        'db': 'dg_test'
     }
 
     def __init__(self, time=None, *args, **kwargs):
