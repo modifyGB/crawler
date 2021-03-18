@@ -7,17 +7,18 @@ import re
 import time
 import execjs
 import requests
+import socket
 
 class ptvnewsSpider(scrapy.Spider):
     name = 'ptvnews'
     website_id = 445 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
     start_urls = ['https://ptvnews.ph/']
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
     headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'
@@ -28,6 +29,7 @@ class ptvnewsSpider(scrapy.Spider):
         self.time = time
 
     def html_get(self, response):
+        socket.setdefaulttimeout(30)
         header = self.headers
         js = re.findall(r'<script>(.+)</script>',response.text)[0]
         ctx1 = execjs.compile('function fun(){'+js.replace('e(r)','return r')+'}') 

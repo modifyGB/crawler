@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
+import socket
 
 #将爬虫类名和name字段改成对应的网站名
 class ambalaSpider(scrapy.Spider):
@@ -17,9 +18,9 @@ class ambalaSpider(scrapy.Spider):
     start_urls = ['http://ambalavaani.com/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_lhl',
-        'password': 'dg_lhl',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数
@@ -40,6 +41,7 @@ class ambalaSpider(scrapy.Spider):
             yield scrapy.Request(category, callback=self.parse_category)
 
     def parse_category(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
 
         articles = soup.select('div.article-three-posts article')

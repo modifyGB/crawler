@@ -8,7 +8,7 @@ import re
 import time
 from datetime import datetime
 import requests
-
+import socket
 
 def khulasaa_time_switch(time_String):
     # November 8, 2020, 7:26 pm
@@ -24,9 +24,9 @@ class KhulasaaSpider(scrapy.Spider):
     start_urls = ['https://www.khulasaa.in/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_cbs',
-        'password': 'dg_cbs',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数
@@ -44,6 +44,7 @@ class KhulasaaSpider(scrapy.Spider):
             yield scrapy.Request(c1, callback=self.parse_category1)
 
     def parse_category1(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
         news_url = []
         news_content = soup.select(".o-article .k-list-sec .allBox ul li")
