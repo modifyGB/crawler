@@ -1,1 +1,1 @@
-scrapy crawl aajtak -a time=1610095076
+scrapy crawl puridunia -a time=1616161503
