@@ -15,11 +15,11 @@ class AgrasamacharSpider(scrapy.Spider):
     allowed_domains = ['www.agrasamachar.com']
     start_urls = ['https://www.agrasamachar.com/',]
     sql = {  # sql配置
-            'host': '127.0.0.1',
-            'user': 'root',
-            'password': 'asdfghjkl',
-            'db': 'dg_test'
-        }
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
+    }
     month = {'जनवरी': 1, 'फ़रवरी': 2, 'मार्च': 3, 'अप्रैल': 4, 'मई': 5, 'जून': 6, 'जुलाई': 7, 'अगस्त': 8,
              'सितंबर': 9, 'अक्तूबर': 10, 'नवंबर': 11, 'दिसंबर': 12}
     # 这是类初始化函数，用来传时间戳参数
