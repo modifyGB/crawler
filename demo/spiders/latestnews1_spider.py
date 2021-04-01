@@ -88,7 +88,8 @@ class Latestnews1Spider(scrapy.Spider):
             else:
                 body_string = soup.select_one("#content article div .entry-content.clearfix").text.strip()
                 if re.match(r"Share\n\n\n\n\n\n+\S+\n\n\n\n\n\nLinkedIn", body_string):
-                    item['body'] = item['abstract'] = re.findall("LinkedIn\n(.*?)\n\n\n\n\nShare", body_string)
+                    body = ""
+                    item['body'] = item['abstract'] = re.findall("LinkedIn(.*?)Share", body_string, re.S)[0]
                 else:
                     item['body'] = item['abstract'] = body_string
             image = soup.select(".entry-content.clearfix .wp-block-image img")

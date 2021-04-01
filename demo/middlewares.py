@@ -57,7 +57,7 @@ class DemoDownloaderMiddleware:
 
         if result == ():
             request.headers['User-Agent'] = str(UserAgent().random)
-            request.meta['proxy'] = 'http://192.168.235.227:8888'
+            # request.meta['proxy'] = 'http://192.168.235.227:8888'
             return None
         else:
             spider.logger.info('filtered url')
