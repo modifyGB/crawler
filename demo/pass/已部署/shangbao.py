@@ -6,7 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
-
+import socket
 
 class ShangbaoSpider(scrapy.Spider):
     name = 'shangbao'
@@ -22,6 +22,7 @@ class ShangbaoSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('http://www.shangbao.com.ph/').text, 'html.parser')
         for i in soup.select('div #nav_left > a')[1:]:
             url = i.get('href')

@@ -6,7 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
-
+import socket
 
 class EmsiSpider(scrapy.Spider):
     name = 'emsindia'
@@ -26,6 +26,7 @@ class EmsiSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('https://emsindia.com/').text, 'html.parser')
         for i in soup.select('.dropdown > a')[:8]:
             meta = {'category1': i.text, 'category2': ''}

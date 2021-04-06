@@ -1,4 +1,4 @@
-
+import socket
 # 此文件包含的头文件不要修改
 import requests
 import scrapy
@@ -43,6 +43,7 @@ class dekhobhopalSpider(scrapy.Spider):
             yield scrapy.Request(category, callback=self.parse_category)
 
     def parse_category(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
 
         article_hrefs = []
@@ -53,19 +54,6 @@ class dekhobhopalSpider(scrapy.Spider):
             for href in soup.select('div.td-block-span6 h3 a'):
                 article_hrefs.append(href.get('href'))
 
-
-            # yield Request(detail_url, callback=self.parse_detail)
-            # check_soup = BeautifulSoup(requests.get(detail_url).content)     #不加content会出错，原因是因为这里的wb_data是requests对象，无法用BeautifulSoup解析
-            # if check_soup.select_one('div.date_and_author_container span').text.split(" ")[1]:
-            #     temp_time = check_soup.select_one('div.date_and_author_container span').text.split(" ")[1]
-            # else:
-            #     temp_time = check_soup.select_one('td.miscinfo').text.split(" ")[1]
-            # adjusted_time = time_adjustment(temp_time)
-            # # self.logger.info("当前时间:"+adjusted_time+"$$$$$$$$$$$$$$")
-            # if self.time is None or Util.format_time3(adjusted_time) >= int(self.time):
-            #     yield Request(detail_url, callback=self.parse_detail)
-            # else:
-            #     self.logger.info("时间截止")
         if soup.select('div.td-ss-main-content span.td-post-date'):
             temp_time = soup.select('div.td-ss-main-content span.td-post-date')[-1].text
             adjusted_time = time_adjustment(temp_time)

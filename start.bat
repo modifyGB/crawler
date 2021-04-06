@@ -1,1 +1,1 @@
-scrapy crawl univarta -a time=1610529812
+scrapy crawl sunstar -a time=1617333131

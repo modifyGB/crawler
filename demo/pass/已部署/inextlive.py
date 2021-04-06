@@ -8,6 +8,7 @@ import re
 import time
 import requests
 from datetime import datetime
+import socket
 
 #将爬虫类名和name字段改成对应的网站名
 class inextliveSpider(scrapy.Spider):
@@ -33,6 +34,7 @@ class inextliveSpider(scrapy.Spider):
             yield Request(i.attrs['href'],callback=self.parse2)
 
     def parse2(self,response):
+        socket.setdefaulttimeout(30)
         html = BeautifulSoup(response.text)
         if len(html.select('.topicList')):# 若有新闻列表则分析
             for i in html.select('.topicList a'):

@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
+import socket
 
 #将爬虫类名和name字段改成对应的网站名
 class ambalaSpider(scrapy.Spider):
@@ -40,6 +41,7 @@ class ambalaSpider(scrapy.Spider):
             yield scrapy.Request(category, callback=self.parse_category)
 
     def parse_category(self, response):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(response.text, features="lxml")
 
         articles = soup.select('div.article-three-posts article')

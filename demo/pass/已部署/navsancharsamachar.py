@@ -6,7 +6,7 @@ from scrapy.http import Request, Response
 import re
 import time
 import requests
-
+import socket
 
 class NavsSpider(scrapy.Spider):
     name = 'navsancharsamachar'
@@ -27,6 +27,7 @@ class NavsSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('http://navsancharsamachar.com/', headers=self.headers).text, 'html.parser')
         for i in soup.select('#menu-primary li'):
             meta = {'category1': i.select_one('a').text}

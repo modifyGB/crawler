@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
-import requests
 
 
 

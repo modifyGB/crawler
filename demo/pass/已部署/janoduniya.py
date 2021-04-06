@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from scrapy.http import Request, Response
 import re
 import time
-
+import socket
 
 class JanoSpider(scrapy.Spider):
     name = 'janoduniya'
@@ -22,6 +22,7 @@ class JanoSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         soup = BeautifulSoup(requests.get('http://janoduniya.tv/').text, 'html.parser')
         for i in soup.select('#primary-menu a')[:-1]:
             meta = {'category1': i.text}
