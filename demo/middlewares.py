@@ -51,6 +51,7 @@ class DemoDownloaderMiddleware:
         self.cur.execute('select request_url from news where request_url = %s',request.url)
         result = self.cur.fetchall()
 
+        # 请求头配置
         if ('dont_filter' in request.meta and request.meta['dont_filter'] == True) or result == ():
             if 'User-Agent' in request.meta:
                 request.headers['User-Agent'] = request.meta['User-Agent']
@@ -64,7 +65,7 @@ class DemoDownloaderMiddleware:
             return None
         else:
             spider.logger.info('filtered url')
-            return IgnoreRequest()
+            return request
 
     def spider_opened(self, spider): 
         self.db = pymysql.connect(
