@@ -20,11 +20,11 @@ class cebudailynewsSpider(scrapy.Spider):
                 'https://cebudailynews.inquirer.net/category/life',
                 'https://cebudailynews.inquirer.net/category/siloy',
                 ]
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     def __init__(self, time=None, *args, **kwargs):

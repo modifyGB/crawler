@@ -7,16 +7,17 @@ import re
 import time
 import json
 import requests
+import socket
 
 class topgearSpider(scrapy.Spider):
     name = 'topgear'
     website_id = 487 # 网站的id(必填)
     language_id = 1866 # 所用语言的id
-    sql = { # sql配置
-        'host' : '192.168.235.162',
-        'user' : 'dg_admin',
-        'password' : 'dg_admin',
-        'db' : 'dg_test'
+    sql = {  # sql配置
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     categorys = [
@@ -50,6 +51,7 @@ class topgearSpider(scrapy.Spider):
         self.time = time
 
     def start_requests(self):
+        socket.setdefaulttimeout(30)
         category1 = 'launch-pad'
         for category in self.categorys:
 
@@ -66,7 +68,7 @@ class topgearSpider(scrapy.Spider):
 
             for i in range(0,100000):
                 js = json.loads(requests.get('https://api.summitmedia-digital.com/topgear/v1/channel/get/{}/{}/{}'.format(category,i,10),headers=self.header).text)
-                if len(js)==0 or js[0]['date_published'] < int(self.time):
+                if len(js)==0 or (self.time != None and js[0]['date_published'] < int(self.time)):
                     self.logger.info('截止')
                     break
                 else:
