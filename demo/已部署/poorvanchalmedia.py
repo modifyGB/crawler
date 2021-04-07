@@ -3,11 +3,7 @@ import scrapy
 from demo.util import Util
 from demo.items import DemoItem
 from bs4 import BeautifulSoup
-from scrapy.http import Request, Response
-import re
-import time
-import requests
-from datetime import datetime
+from scrapy.http import Request
 
 def time_font(time):
     #Mar 13, 2021
@@ -75,15 +71,15 @@ def time_font_2(past_time):
     return year + '-' + month + '-' + day + ' 00:00:00'
 
 class poorvanchalmedia(scrapy.Spider):
-    name = 'poorvanchalmedia_spider'
+    name = 'poorvanchalmedia'
     website_id = 1144 # 网站的id(必填)
     language_id = 1740 # 所用语言的id
     start_urls = ['https://www.poorvanchalmedia.com/']
     sql = {  # sql配置
         'host': '192.168.235.162',
-        'user': 'dg_cxq',
-        'password': 'dg_cxq',
-        'db': 'dg_test'
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
     # 这是类初始化函数，用来传时间戳参数
@@ -108,6 +104,8 @@ class poorvanchalmedia(scrapy.Spider):
             last_time = time_font_2(page.find('div', id='content').find_all('div', class_='post-item')[-1].find('p',class_='post-meta').text.strip('\n'))
             if self.time is None or Util.format_time3(last_time) >= int(self.time):
                 yield Request(next_url,callback=self.parse_2)
+            else:
+                self.logger.info('截止')
 
     def parse_3(self,response,**kwargs):
         new_soup = BeautifulSoup(response.text, 'lxml')
