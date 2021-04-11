@@ -53,33 +53,35 @@ def excel(path):
     book = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
     xlr = book.add_sheet('每日',cell_overwrite_ok=True)
-    data = select("select website_id,url,website.c_name,website.e_name,count(news.id),developer,`language`.c_name,country.`name` from ((news left join website on news.website_id = website.id) left join `language` on website.lan_id = `language`.id) left join country on website.country_id = country.id where news.cole_time >= '{}' and news.cole_time < '{}' group by website_id".format(time_yesterday,time_now))
+    data = select("select website_id,url,website.c_name,website.e_name,count(news.id),developer,`language`.c_name,country.`name`,website.start_time from ((news left join website on news.website_id = website.id) left join `language` on website.lan_id = `language`.id) left join country on website.country_id = country.id where news.cole_time >= '{}' and news.cole_time < '{}' group by website_id".format(time_yesterday,time_now))
     i = 0
-    for x in ['website_id','url','c_name','e_name','num','developer','language','country']:
+    for x in ['website_id','url','c_name','e_name','num','developer','language','country','start_time']:
         xlr.write(0,i,x)
         i+=1
     i = 1
     for y in data:
         j = 0
-        for x in y:
+        for x in y[:-1]:
             xlr.write(i,j,x)
             j+=1
+        xlr.write(i,j,y[-1].strftime('%Y-%m-%d %H:%M:%S')) if y[-1] != None else xlr.write(i,j,'None')
         i+=1
     xlr.write(i+1,0,'总条数')
     xlr.write(i+2,0,select("select count(id) from news where news.cole_time >= '{}' and news.cole_time < '{}'".format(time_yesterday,time_now))[0][0])
 
     xlr = book.add_sheet('累计',cell_overwrite_ok=True)
-    data = select("select website_id,url,website.c_name,website.e_name,count(news.id),developer,`language`.c_name,country.`name` from ((news left join website on news.website_id = website.id) left join `language` on website.lan_id = `language`.id) left join country on website.country_id = country.id group by website_id")
+    data = select("select website_id,url,website.c_name,website.e_name,count(news.id),developer,`language`.c_name,country.`name`,website.start_time from ((news left join website on news.website_id = website.id) left join `language` on website.lan_id = `language`.id) left join country on website.country_id = country.id group by website_id")
     i = 0
-    for x in ['website_id','url','c_name','e_name','num','developer','language','country']:
+    for x in ['website_id','url','c_name','e_name','num','developer','language','country','start_time']:
         xlr.write(0,i,x)
         i+=1
     i = 1
     for y in data:
         j = 0
-        for x in y:
+        for x in y[:-1]:
             xlr.write(i,j,x)
             j+=1
+        xlr.write(i,j,y[-1].strftime('%Y-%m-%d %H:%M:%S')) if y[-1] != None else xlr.write(i,j,'None')
         i+=1
     xlr.write(i+1,0,'总条数')
     xlr.write(i+2,0,select('select count(id) from news')[0][0])
