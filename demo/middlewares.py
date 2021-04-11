@@ -65,7 +65,7 @@ class DemoDownloaderMiddleware:
             return None
         else:
             spider.logger.info('filtered url')
-            return request
+            return IgnoreRequest
 
     def spider_opened(self, spider): 
         self.db = pymysql.connect(
