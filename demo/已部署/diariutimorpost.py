@@ -14,10 +14,10 @@ class diariutimorpostSpider(scrapy.Spider):
     language_id = 2122  # 所用语言的id
     start_urls = ['http://diariutimorpost.com/pt/']
     sql = {  # sql配置
-        'host': 'localhost',
-        'user': 'root',
-        'password': 'asdfghjkl',
-        'db': 'dg_test'
+        'host': '192.168.235.162',
+        'user': 'dg_admin',
+        'password': 'dg_admin',
+        'db': 'dg_crawler'
     }
 
 
