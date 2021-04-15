@@ -1,6 +1,8 @@
-import requests
-from bs4 import BeautifulSoup as bs
 import re
+import datetime
+from datetime import datetime
+
+# -*- coding:utf-8 -*-
 
 # url = "https://www.centralindia.news/"
 # headers = {
@@ -11,5 +13,16 @@ import re
 # response = requests.get(url, headers=headers).text
 # print(response)
 
-aurl = "https://www.centralindia.news/categ/%e0%a4%b0%e0%a4%be%e0%a4%9c%e0%a5%8d%e0%a4%af/"
-print(re.match("https://www.centralindia.news/category/", aurl))
+# url = "https://sanmarg.in/"
+# headers={
+#     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+# }
+# soup = bs(requests.get(url, headers=headers).text, features="lxml")
+# print(soup)
+
+url = 'https://sanmarg.in/entertainment/art/%e0%a4%85%e0%a4%ac-%e0%a4%ac%e0%a5%89%e0%a4%b2%e0%a5%80%e0%a4%b5%e0%a5%81%e0%a4%a1-%e0%a4%95%e0%a5%87-%e0%a4%aa%e0%a4%b0%e0%a5%8d%e0%a4%a6%e0%a5%87-%e0%a4%aa%e0%a4%b0-%e0%a4%a6%e0%a4%bf%e0%a4%96/'
+splited_url = url.split("https://sanmarg.in/")[1]
+print(splited_url)
+category1 = splited_url.split("/", 1)[0]
+category2 = None if splited_url.split("/", 2)[2] == '' else splited_url.split("/", 2)[1]
+print(category2)

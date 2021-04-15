@@ -25,7 +25,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
   </component>
-  <component name="RunManager" selected="Python.centralindia_spider">
+  <component name="RunManager" selected="Python.test">
     <configuration name="centralindia_spider" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="crawler" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -91,8 +91,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.centralindia_spider" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.centralindia_spider" />
         <item itemvalue="Python.sinceindependence_spider" />
       </list>
     </recent_temporary>
@@ -109,25 +109,34 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1894" height="217" key="GridCell.Tab.0.bottom" timestamp="1616766100809">
+    <state width="1894" height="217" key="GridCell.Tab.0.bottom" timestamp="1618482083569">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1894" height="217" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1616766100809" />
-    <state width="1894" height="217" key="GridCell.Tab.0.center" timestamp="1616766100808">
+    <state width="1894" height="217" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1618482083569" />
+    <state width="1894" height="217" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617265501368" />
+    <state width="1894" height="217" key="GridCell.Tab.0.center" timestamp="1618482083568">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1894" height="217" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1616766100808" />
-    <state width="1894" height="217" key="GridCell.Tab.0.left" timestamp="1616766100808">
+    <state width="1894" height="217" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1618482083568" />
+    <state width="1894" height="217" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617265501368" />
+    <state width="1894" height="217" key="GridCell.Tab.0.left" timestamp="1618482083567">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1894" height="217" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1616766100808" />
-    <state width="1894" height="217" key="GridCell.Tab.0.right" timestamp="1616766100809">
+    <state width="1894" height="217" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1618482083567" />
+    <state width="1894" height="217" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617265501368" />
+    <state width="1894" height="217" key="GridCell.Tab.0.right" timestamp="1618482083569">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1894" height="217" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1616766100809" />
-    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1617260922194">
+    <state width="1894" height="217" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1618482083569" />
+    <state width="1894" height="217" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617265501368" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1618482222430">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1617260922194" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1618482222430" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1617266002715" />
+    <state x="427" y="42" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1617265124182">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="427" y="42" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1617265124182" />
   </component>
 </project>
