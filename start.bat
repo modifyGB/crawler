@@ -1,1 +1,1 @@
-scrapy crawl jb -a time=1618128094
+scrapy crawl thejanmat -a time=1618993222
